@@ -1,0 +1,129 @@
+.registerPageContainer {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url('/terra2.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  font-family: Arial, sans-serif;
+}
+
+.registerCard {
+  background-color: rgba(10, 25, 47, 0.4);
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  color: #E2E8F0;
+  margin: 20px;
+}
+
+.logoSection {
+  margin-bottom: 20px;
+}
+
+.crypTenLogo {
+  width: 100px; /* Ajuste o tamanho conforme necessário */
+  height: auto;
+}
+
+.registerCard h2 {
+  color: #64FFDA;
+  margin-bottom: 10px;
+  font-size: 1.8em;
+}
+
+.registerCard p {
+  color: #A0AEC0;
+  margin-bottom: 30px;
+  font-size: 0.9em;
+}
+
+.formGroup {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 8px;
+  color: #E2E8F0;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.formGroup input {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #4A5568;
+  border-radius: 5px;
+  background-color: #2D3748;
+  color: #E2E8F0;
+  font-size: 1em;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.formGroup input:focus {
+  border-color: #64FFDA;
+}
+
+.registerButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #00BCD4;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+}
+
+.registerButton:hover {
+  background-color: #00ACC1;
+  box-shadow: 0 0 10px rgba(0, 188, 212, 0.8);
+}
+
+.errorMessage {
+  color: #dc3545; /* Vermelho para erros */
+  margin-top: -10px;
+  margin-bottom: 15px;
+  font-size: 0.85em;
+}
+
+.successMessage {
+  color: #28a745; /* Verde para sucesso */
+  margin-top: -10px;
+  margin-bottom: 15px;
+  font-size: 0.85em;
+}
+
+.loginLink {
+  margin-top: 20px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.loginLink a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.loginLink a:hover {
+  text-decoration: underline;
+}

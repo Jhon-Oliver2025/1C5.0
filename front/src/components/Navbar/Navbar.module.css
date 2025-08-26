@@ -1,0 +1,383 @@
+.navbar {
+  width: 100%; /* Garante que a navbar ocupe toda a largura */
+  display: flex; /* Habilita o flexbox para alinhamento */
+  justify-content: space-between; /* Mantém o logo à esquerda e os links à direita */
+  align-items: center; /* Centraliza verticalmente os itens */
+  padding: 10px 40px; /* Padding lateral */
+  background-color: #000000;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0; /* IMPORTANTE: Garante que comece do lado esquerdo */
+  z-index: 1004;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  position: relative;
+  /* IMPORTANTE: Remove qualquer justify-content que possa centralizar */
+}
+
+.logoWrapper { /* NEW: Wrapper for the logo with the status border */
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px; /* Espaço para a borda e o brilho */
+  border-radius: 8px; /* Borda arredondada para o wrapper */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  z-index: 2; /* Garante que o wrapper esteja acima de outros elementos se houver */
+}
+
+.logoWrapper.online {
+  border: 2px solid #07FF86; /* Borda verde para online */
+  box-shadow: 0 0 8px rgba(7, 255, 134, 0.3); /* Brilho sutil estático */
+}
+
+.logoWrapper.offline {
+  border: 2px solid #FF0000; /* Borda vermelha para offline */
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.3); /* Brilho sutil estático */
+}
+
+.crypTenLogo { /* Estilo para a imagem do logo dentro do wrapper */
+  height: 40px; /* Tamanho do logo */
+  width: auto;
+  object-fit: contain;
+  display: block; /* Remove qualquer espaço extra */
+}
+
+/* Estilos para o logo de membros */
+.membersLogoLink {
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  text-decoration: none;
+}
+
+.membersLogoLink:hover {
+  transform: scale(1.05);
+  opacity: 0.8;
+}
+
+.membersLogo {
+  height: 35px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.2s ease;
+}
+
+.membersLogo:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.logoLink { /* Adicionado estilo para o link do logo */
+  color: #64FFDA; /* Cor de destaque para o logo */
+  text-decoration: none;
+  font-size: 1.8em; /* Tamanho da fonte para o texto do logo, se for texto */
+  font-weight: bold;
+  transition: color 0.3s ease;
+  display: flex; /* Adicionado para alinhar o conteúdo (logo) dentro do link */
+  align-items: center; /* Adicionado para alinhar o conteúdo (logo) dentro do link */
+}
+
+.logoLink:hover {
+  color: #98FFEC; /* Cor mais clara no hover */
+}
+
+.desktopNav {
+  display: flex; /* Garante que os links fiquem em linha */
+  gap: 10px; /* Espaçamento entre os links - Reduzido de 15px para 10px */
+}
+
+.navLink {
+  color: #CCD6F6; /* Cor clara para os links */
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: color 0.3s ease, transform 0.2s ease, border-bottom 0.3s ease; /* Adicionado border-bottom para transição */
+  padding-bottom: 3px; /* Espaço para a borda */
+}
+
+.navLink:hover {
+  color: #64FFDA; /* Um tone de azul/verde claro para hover, opcional */
+  transform: translateY(-2px); /* Efeito de leve elevação */
+}
+
+.activeNavLink { /* Estilo para o link ativo em desktop */
+  color: #64FFDA; /* Cor de destaque */
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: bold; /* Deixa o texto mais forte */
+  border-bottom: 2px solid #64FFDA; /* Adiciona uma borda inferior */
+  padding-bottom: 3px; /* Garante espaço para a borda */
+}
+
+/* Estilos específicos para o link "Sair" */
+.logoutLink {
+  color: #FF6B6B; /* Uma cor de destaque para "Sair", como vermelho */
+  border: 2px solid #FF6B6B; /* Borda um pouco mais grossa */
+  padding: 10px 20px; /* Aumenta o padding para um botão maior */
+  border-radius: 8px; /* Borda mais arredondada */
+  font-weight: 600; /* Deixa o texto um pouco mais forte */
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.logoutLink:hover {
+  background-color: #FF4C4C; /* Um vermelho um pouco mais vibrante no hover */
+  color: #0A192F; /* Cor do texto no hover */
+  border-color: #FF4C4C; /* Mantém a cor da borda no hover */
+  transform: translateY(-3px); /* Efeito de elevação um pouco mais pronunciado */
+  box-shadow: 0 4px 10px rgba(255, 107, 107, 0.4); /* Sombra sutil */
+}
+
+.loginLink {
+  color: #64FFDA;
+  border: 2px solid #64FFDA;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.loginLink:hover {
+  background-color: #64FFDA;
+  color: #0A192F;
+  border-color: #64FFDA;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(100, 255, 218, 0.4);
+}
+
+/* Removido: Hamburger duplicado - usando apenas mobileMenuButton */
+
+/* Styles for the mobile menu */
+.mobileMenu {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 280px;
+  height: calc(100% - 60px);
+  background-color: #000000;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 1003;
+  transform: translateX(0);
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Seções do Menu */
+.menuSection {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(100, 255, 218, 0.1);
+}
+
+.menuSection:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.menuSectionTitle {
+  color: #64FFDA;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 10px 0;
+  padding: 0 0 5px 0;
+  border-bottom: 1px solid rgba(100, 255, 218, 0.2);
+}
+
+.mobileNavLink {
+  color: #CCD6F6;
+  text-decoration: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  text-align: left;
+  width: 100%;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border-bottom: 1px solid rgba(204, 214, 246, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobileNavLink:hover {
+  background-color: rgba(100, 255, 218, 0.1); /* Fundo levemente transparente para hover */
+}
+
+.mobileNavLink:last-child { /* Remove a borda do último item para um visual mais limpo */
+  border-bottom: none;
+}
+
+.activeMobileNavLink {
+  background-color: rgba(100, 255, 218, 0.2);
+  color: #64FFDA;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  text-align: left;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Estilo específico para o botão de logout no menu mobile */
+.mobileNavLink.logoutLink {
+  color: #FF6B6B;
+  border: 1px solid #FF6B6B;
+  border-radius: 6px;
+  margin-top: 10px;
+  background-color: rgba(255, 107, 107, 0.1);
+}
+
+.mobileNavLink.logoutLink:hover {
+  background-color: rgba(255, 107, 107, 0.2);
+  border-color: #FF4C4C;
+}
+
+/* Animação para o menu mobile */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Esconder navegação desktop em todas as telas */
+.desktopNav {
+  display: none; /* Links sempre escondidos - usar apenas menu hambúrguer */
+}
+
+/* Media Queries para responsividade */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.8rem 1rem; /* Ajusta o padding para telas menores */
+  }
+  
+  /* Controla o tamanho do logo em mobile */
+  .crypTenLogo {
+    height: 28px !important; /* Reduz o tamanho do logo em mobile */
+    max-height: 28px !important;
+    width: auto !important;
+  }
+  
+  .logoWrapper {
+    padding: 2px !important; /* Reduz o padding do wrapper */
+  }
+}
+
+/* Para telas muito pequenas */
+@media (max-width: 480px) {
+  .crypTenLogo {
+    height: 24px !important; /* Logo ainda menor em telas muito pequenas */
+    max-height: 24px !important;
+  }
+  
+  .navbar {
+    padding: 0.6rem 0.8rem; /* Padding ainda menor */
+  }
+}
+
+/* Para telas médias (tablets) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .crypTenLogo {
+    height: 35px; /* Tamanho intermediário para tablets */
+    max-height: 35px;
+  }
+}
+
+/* Animações removidas - agora usando brilho estático */
+
+/* Se quiser adicionar animação de entrada */
+/* Mobile Menu Overlay e Menu - definições únicas */
+.mobileMenuOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1002;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* Botão Menu (visível em todas as telas) */
+.mobileMenuButton {
+  display: block;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 8px;
+  margin-right: 15px;
+  z-index: 1001;
+  position: relative;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.mobileMenuButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Status do Backend - canto direito */
+.backendStatus {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  padding-right: 20px;
+}
+
+.backendLogo {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.backendLogo.online {
+  border: 2px solid #07FF86;
+  box-shadow: 0 0 10px rgba(7, 255, 134, 0.5);
+  animation: pulse-green 2s infinite;
+}
+
+.backendLogo.offline {
+  border: 2px solid #FF0000;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-green {
+  0% { box-shadow: 0 0 5px rgba(7, 255, 134, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(7, 255, 134, 0.8); }
+  100% { box-shadow: 0 0 5px rgba(7, 255, 134, 0.5); }
+}
+
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(255, 0, 0, 0.8); }
+  100% { box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); }
+}

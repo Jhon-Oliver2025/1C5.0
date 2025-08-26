@@ -1,0 +1,440 @@
+.signalCard {
+  background: #1a2332;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #2d3748;
+  transition: all 0.3s ease;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.signalCard.compra {
+  border-left: 4px solid #22c55e;
+}
+
+.signalCard.venda {
+  border-left: 4px solid #ef4444;
+}
+
+.signalCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Header do Card */
+.cardHeader {
+  background: #2a3441;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #374151;
+}
+
+.symbolContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.symbol {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.signalClassStars {
+  font-size: 12px;
+  margin-top: 2px;
+  text-shadow: 0 0 8px currentColor;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.typeButton {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.typeButton.compra {
+  background: #22c55e;
+}
+
+.typeButton.venda {
+  background: #ef4444;
+}
+
+.premiumText {
+  font-size: 0.6em;
+  font-weight: bold;
+  color: #C0C0C0; /* Cor prata para Sinais Premium */
+  margin-bottom: 1px;
+  text-align: left; /* Alterado de center para left */
+  text-shadow: 0 0 3px rgba(192, 192, 192, 0.5); /* Efeito de brilho sutil */
+}
+
+.premiumTextTwoStars {
+  font-size: 0.6em;
+  font-weight: bold;
+  color: #E0E0E0; /* Prata mais brilhante para Premium com duas estrelas */
+  margin-bottom: 1px;
+  text-align: left; /* Alterado de center para left */
+  text-shadow: 0 0 4px rgba(224, 224, 224, 0.6); /* Efeito de brilho mais intenso */
+}
+
+.eliteText {
+  font-size: 0.6em;
+  font-weight: bold;
+  color: #FFD700; /* Cor dourada para Sinais Elite */
+  margin-bottom: 1px;
+  text-align: left; /* Alterado de center para left */
+  text-shadow: 0 0 5px rgba(255, 215, 0, 0.7); /* Efeito de brilho mais intenso */
+}
+
+/* Conteúdo do Card */
+.cardContent {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.priceItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.label {
+  color: #9ca3af;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.priceValue {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.targetPrice {
+  color: #fbbf24;
+}
+
+.bottomRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid #374151;
+}
+
+.dateContainer {
+  display: flex;
+  align-items: center;
+}
+
+.date {
+  color: #e5e7eb;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.projectionContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.projectionLabel {
+  color: #9ca3af;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.changePercentage {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.changePercentage.positive {
+  color: #22c55e;
+}
+
+.changePercentage.negative {
+  color: #ef4444;
+}
+
+
+.standardText {
+  font-size: 0.9em;
+  font-weight: bold;
+  color: #A0AEC0; /* Cor cinza para sinais padrão */
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+.scoreDetail,
+.timeframeDetail,
+.leverageDetail {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.9em;
+  margin-bottom: 5px;
+}
+
+.score {
+  font-weight: bold;
+  color: #64FFDA;
+}
+
+.timeframes {
+  font-weight: bold;
+  color: #A0AEC0;
+}
+
+.leverage {
+  font-weight: bold;
+  color: #FFD700;
+}
+
+.eliteText {
+  color: #FFD700; /* Dourado - mantido */
+  font-weight: bold;
+  font-size: 0.8em;
+  text-align: center;
+  margin: 4px 0;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.premiumText {
+  color: #C0C0C0; /* Prateado */
+  font-weight: bold;
+  font-size: 0.8em;
+  text-align: center;
+  margin: 4px 0;
+  text-shadow: 0 0 10px rgba(192, 192, 192, 0.5);
+}
+
+.eliteText {
+  color: #FFD700; /* Dourado - mantido */
+  font-weight: bold;
+  font-size: 0.9em;
+  text-align: center;
+  margin: 8px 0;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.standardText {
+  color: #00D4AA;
+  font-weight: 600;
+  font-size: 0.9em;
+  text-align: center;
+  margin: 8px 0;
+}
+
+.projectionDetail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 4px 0;
+  padding: 6px 8px;
+  background-color: rgba(100, 255, 218, 0.1);
+  border-radius: 6px;
+  font-size: 0.85em;
+}
+
+/* ========================================
+   📱 MEDIA QUERIES PARA RESPONSIVIDADE
+======================================== */
+
+/* Mobile pequeno (até 375px) */
+@media (max-width: 375px) {
+  .signalCard {
+    margin-bottom: 8px;
+    border-radius: 8px;
+  }
+  
+  .cardHeader {
+    padding: 8px 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  
+  .symbol {
+    font-size: 13px;
+  }
+  
+  .typeButton {
+    padding: 4px 8px;
+    font-size: 9px;
+    align-self: flex-end;
+  }
+  
+  .cardContent {
+    padding: 10px;
+    gap: 8px;
+  }
+  
+  .priceRow {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .priceValue {
+    font-size: 13px;
+  }
+  
+  .label {
+    font-size: 9px;
+  }
+  
+  .bottomRow {
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+  }
+  
+  .date {
+    font-size: 8px;
+  }
+  
+  .changePercentage {
+    font-size: 11px;
+  }
+}
+
+/* Mobile médio (376px - 414px) */
+@media (min-width: 376px) and (max-width: 414px) {
+  .cardHeader {
+    padding: 10px 12px;
+  }
+  
+  .symbol {
+    font-size: 14px;
+  }
+  
+  .typeButton {
+    font-size: 10px;
+  }
+  
+  .cardContent {
+    padding: 12px;
+  }
+  
+  .priceValue {
+    font-size: 14px;
+  }
+}
+
+/* Mobile grande (415px - 480px) */
+@media (min-width: 415px) and (max-width: 480px) {
+  .priceRow {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .bottomRow {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/* Tablet pequeno (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .signalCard {
+    margin-bottom: 12px;
+  }
+  
+  .cardHeader {
+    padding: 12px 14px;
+  }
+  
+  .symbol {
+    font-size: 15px;
+  }
+  
+  .cardContent {
+    padding: 14px;
+  }
+  
+  .priceValue {
+    font-size: 15px;
+  }
+}
+
+/* Responsividade para mobile */
+@media (max-width: 480px) {
+  .date {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .projectionLabel {
+    font-size: 10px;
+  }
+  
+  .changePercentage {
+    font-size: 12px;
+  }
+}
+
+/* Responsividade para tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+  .date {
+    font-size: 14px;
+  }
+}
+
+/* Força aplicação em dispositivos móveis */
+@media (max-width: 768px) {
+  .signalCard {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+  
+  .cardHeader,
+  .cardContent,
+  .priceRow,
+  .bottomRow {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+  
+  .symbol,
+  .priceValue,
+  .date,
+  .changePercentage {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+}

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    
+    <!-- Preload Critical Resources -->
+    <link rel="dns-prefetch" href="//commondatastorage.googleapis.com" />
+    <link rel="preconnect" href="//commondatastorage.googleapis.com" crossorigin />
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="preconnect" href="//fonts.gstatic.com" crossorigin />
+    
+    <!-- Cache Control Meta Tags -->
+    <meta http-equiv="Cache-Control" content="public, max-age=31536000" />
+    <meta http-equiv="Expires" content="Thu, 31 Dec 2025 23:59:59 GMT" />
+    
+    <!-- Basic Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="description" content="Plataforma avançada de sinais de trading para criptomoedas com análise técnica em tempo real" />
+    <meta name="keywords" content="trading, criptomoedas, sinais, análise técnica, bitcoin, ethereum" />
+    <meta name="author" content="1Crypten" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="background-color" content="#000000" />
+    <meta name="display" content="standalone" />
+    <meta name="orientation" content="portrait" />
+    
+    <!-- Apple PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="1Crypten" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    
+    <!-- Microsoft PWA Meta Tags -->
+    <meta name="msapplication-TileColor" content="#000000" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="msapplication-starturl" content="/" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="1Crypten" />
+    <meta property="og:description" content="Plataforma avançada de sinais de trading para criptomoedas" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://1crypten.space" />
+    <meta property="og:image" content="/icons/icon-512x512.svg" />
+    <meta property="og:site_name" content="1Crypten" />
+    <meta property="og:locale" content="pt_BR" />
+    
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="1Crypten - Trading Signals" />
+    <meta name="twitter:description" content="Plataforma avançada de sinais de trading para criptomoedas" />
+    <meta name="twitter:image" content="/icons/icon-512x512.svg" />
+    
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/png" href="/logo3.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo3.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/logo3.png" />
+    <link rel="shortcut icon" href="/logo3.png" />
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="/logo3.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/logo3.png" />
+    <link rel="apple-touch-icon" sizes="96x96" href="/icons/icon-96x96.png" />
+    <link rel="apple-touch-icon" sizes="128x128" href="/icons/icon-128x128.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.png" />
+    <link rel="apple-touch-icon" sizes="384x384" href="/icons/icon-384x384.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512x512.png" />
+    
+    <!-- PWA Meta Tags para App Nativo (removidas duplicatas) -->
+    <meta name="application-name" content="1Crypten" />
+    <meta name="msapplication-TileColor" content="#000000" />
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="/src/assets/terra.png" as="image" />
+    <link rel="preload" href="/logo3.png" as="image" />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    
+    <title>1Crypten</title>
+  </head>
+  <body>
+    <!-- Banner removido - agora temos página dedicada para o App 1Crypten -->
+    
+    <div id="root"></div>
+    
+    <!-- Service Worker Registration - TEMPORARIAMENTE DESABILITADO -->
+    <script>
+      // Service Worker temporariamente desabilitado para desenvolvimento
+      console.log('⚠️ Service Worker desabilitado durante desenvolvimento das páginas Elementor');
+      
+      // Desregistrar Service Worker existente se houver
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+            console.log('🗑️ Service Worker desregistrado:', registration.scope);
+          }
+        });
+      }
+      
+      /*
+      // Código original do Service Worker (reativar após desenvolvimento)
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', async () => {
+          try {
+            const registration = await navigator.serviceWorker.register('/sw.js');
+            console.log('✅ Service Worker registrado:', registration.scope);
+            
+            // Verificar atualizações
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // Nova versão disponível
+                  if (confirm('Nova versão disponível! Recarregar página?')) {
+                    window.location.reload();
+                  }
+                }
+              });
+            });
+          } catch (error) {
+            console.error('❌ Erro ao registrar Service Worker:', error);
+          }
+        });
+      }
+      */
+      
+      // PWA Install Prompt removido - agora gerenciado pela página dedicada
+      console.log('🎯 Service Worker ativo - App 1Crypten pronto para instalação via /app');
+      
+      // Detectar se já está instalado
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('🎉 App 1Crypten já está instalado!');
+        document.body.classList.add('app-installed');
+      }
+    </script>
+    
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
