@@ -27,12 +27,13 @@ export const usePWAManager = () => {
       const token = localStorage.getItem('token');
       if (!token) return false;
 
-      const response = await fetch('/api/auth/validate', {
+      const response = await fetch('/api/auth/verify-token', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({ token })
       });
 
       if (!response.ok) {

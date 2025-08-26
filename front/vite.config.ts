@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 
 export default defineConfig(({ mode }) => {
-  // Detectar se está em produção ou desenvolvimento
-  const isProduction = mode === 'production';
+  // Forçar desenvolvimento local quando rodando npm run dev
+  const isProduction = mode === 'production' && process.env.NODE_ENV === 'production';
   
   // Configurar target da API baseado no ambiente
   const apiTarget = isProduction 
