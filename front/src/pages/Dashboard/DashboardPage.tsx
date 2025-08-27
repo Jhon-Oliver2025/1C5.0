@@ -170,13 +170,14 @@ const DashboardPage: React.FC = () => {
           console.warn('API retornou HTML em vez de JSON, usando status padrão');
         }
       } else {
-        if (response.status === 401 || response.status === 403) {
-          console.warn('Token inválido para cleanup-status, redirecionando para login');
-          logout();
-          navigate('/login');
-          return;
-        }
-        console.warn('API cleanup-status não disponível');
+        // Comentado temporariamente para evitar logout automático
+        // if (response.status === 401 || response.status === 403) {
+        //   console.warn('Token inválido para cleanup-status, redirecionando para login');
+        //   logout();
+        //   navigate('/login');
+        //   return;
+        // }
+        console.warn(`API cleanup-status não disponível (${response.status})`);
       }
     } catch (error) {
       console.error('Erro ao buscar status das limpezas:', error);
@@ -224,11 +225,16 @@ const DashboardPage: React.FC = () => {
           });
         }
       } else {
+        // Comentado temporariamente para evitar logout automático
+        // if (response.status === 401 || response.status === 403) {
+        //   console.warn('Token inválido para BTC data, redirecionando para login');
+        //   logout();
+        //   navigate('/login');
+        //   return;
+        // }
+        console.warn(`API BTC data não disponível (${response.status})`);
         if (response.status === 401 || response.status === 403) {
-          console.warn('Token inválido para BTC data, redirecionando para login');
-          logout();
-          navigate('/login');
-          return;
+          console.warn('Token pode estar inválido para BTC data, mas continuando...');
         }
         // Fallback se a API não estiver disponível
         setBtcData({
@@ -397,11 +403,18 @@ const DashboardPage: React.FC = () => {
       }
       
       if (!response.ok) {
+        // Comentado temporariamente para evitar logout automático
+        // if (response.status === 401 || response.status === 403) {
+        //   console.warn('Token inválido, redirecionando para login');
+        //   logout();
+        //   navigate('/login');
+        //   return;
+        // }
+        console.warn(`API não disponível (${response.status})`);
         if (response.status === 401 || response.status === 403) {
-          console.warn('Token inválido, redirecionando para login');
-          logout();
-          navigate('/login');
+          console.warn('Token pode estar inválido, mas continuando...');
           return;
+        }
         }
         throw new Error(`Erro na API: ${response.status}`);
       }
