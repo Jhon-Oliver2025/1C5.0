@@ -189,8 +189,9 @@ const ProtectedLesson: React.FC<ProtectedLessonProps> = ({
       }
 
       // Verificar se é admin primeiro
-      try {
-        const adminResponse = await fetch('/api/auth/check-admin', {
+        try {
+          const apiUrl = import.meta.env.VITE_API_URL || '';
+          const adminResponse = await fetch(`${apiUrl}/api/auth/check-admin`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

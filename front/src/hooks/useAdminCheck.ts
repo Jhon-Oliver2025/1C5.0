@@ -24,7 +24,8 @@ export const useAdminCheck = () => {
         return;
       }
 
-      const response = await fetch('/api/auth/check-admin', {
+      const apiUrl = import.meta.env.VITE_API_URL || '';
+      const response = await fetch(`${apiUrl}/api/auth/check-admin`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
