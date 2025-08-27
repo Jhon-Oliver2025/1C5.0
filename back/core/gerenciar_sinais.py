@@ -8,6 +8,13 @@ from typing import Dict, List, Optional, Union, Any
 from pandas import DataFrame, Series
 from .database import Database
 
+# Importar função para salvar no Supabase
+try:
+    from api_routes.auth_supabase import save_signal_to_supabase
+except ImportError:
+    def save_signal_to_supabase(signal_data):
+        return False
+
 class GerenciadorSinais:
     def __init__(self, db_instance):
         self.db = db_instance
@@ -73,9 +80,25 @@ class GerenciadorSinais:
                 'btc_trend': signal_data.get('btc_trend')
             }
             
+            # Salvar no banco local
             result = self.db.add_signal(formatted_signal)
+            
+            # Também salvar no Supabase
+            supabase_saved = False
+            try:
+                supabase_saved = save_signal_to_supabase(formatted_signal)
+                if supabase_saved:
+                    print(f"✅ Sinal salvo no Supabase: {formatted_signal['symbol']}")
+                else:
+                    print(f"⚠️ Falha ao salvar no Supabase: {formatted_signal['symbol']}")
+            except Exception as e:
+                print(f"❌ Erro ao salvar no Supabase: {e}")
+            
             if result:
-                print(f"✅ Sinal salvo com sucesso: {formatted_signal['symbol']}")
+                print(f"✅ Sinal salvo localmente: {formatted_signal['symbol']}")
+                if supabase_saved:
+                    print(f"🎯 Sinal sincronizado com Supabase: {formatted_signal['symbol']}")
+            
             return result
             
         except Exception as e:
