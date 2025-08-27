@@ -106,8 +106,9 @@ class SupabaseAuth:
             return None
     
     def save_signal_to_supabase(self, signal_data: dict) -> bool:
-        """Salva sinal no Supabase"""
+        """Salva sinal no Supabase com todos os campos necessários"""
         if not self.is_available:
+            print("⚠️ Supabase não disponível para salvar sinal")
             return False
             
         try:
@@ -117,14 +118,26 @@ class SupabaseAuth:
                 'type': signal_data.get('type'),
                 'entry_price': float(signal_data.get('entry_price', 0)),
                 'target_price': float(signal_data.get('target_price', 0)),
-                'entry_time': signal_data.get('timestamp', datetime.now().isoformat()),
-                'status': signal_data.get('status', 'pending'),
+                'entry_time': signal_data.get('entry_time', signal_data.get('timestamp', datetime.now().isoformat())),
+                'status': signal_data.get('status', 'OPEN'),
                 'quality_score': float(signal_data.get('quality_score', 0)),
                 'signal_class': signal_data.get('signal_class'),
+                'projection_percentage': float(signal_data.get('projection_percentage', 0)),
+                'confirmed_at': signal_data.get('confirmed_at'),
+                'confirmation_reasons': signal_data.get('confirmation_reasons', ''),
+                'confirmation_attempts': int(signal_data.get('confirmation_attempts', 0)),
+                'btc_correlation': float(signal_data.get('btc_correlation', 0)),
+                'btc_trend': signal_data.get('btc_trend', 'NEUTRAL'),
                 'trend_score': float(signal_data.get('trend_score', 0)),
                 'rsi_score': float(signal_data.get('rsi_score', 0)),
-                'timeframe': signal_data.get('entry_timeframe', '1h')
+                'timeframe': signal_data.get('entry_timeframe', signal_data.get('timeframe', '1h')),
+                'created_at': datetime.now().isoformat()
             }
+            
+            # Remover campos None para evitar erros no Supabase
+            supabase_signal = {k: v for k, v in supabase_signal.items() if v is not None}
+            
+            print(f"💾 Salvando sinal no Supabase: {supabase_signal['symbol']} - {supabase_signal['type']}")
             
             response = requests.post(
                 f"{self.supabase_url}/rest/v1/signals",
@@ -133,14 +146,22 @@ class SupabaseAuth:
             )
             
             if response.status_code in [200, 201]:
-                current_app.logger.info(f"Sinal salvo no Supabase: {signal_data['symbol']}")
+                print(f"✅ Sinal salvo no Supabase: {signal_data['symbol']} - {signal_data['type']}")
+                if hasattr(current_app, 'logger'):
+                    current_app.logger.info(f"Sinal salvo no Supabase: {signal_data['symbol']}")
                 return True
             else:
-                current_app.logger.error(f"Erro ao salvar sinal: {response.status_code} - {response.text}")
+                error_msg = f"Erro ao salvar sinal: {response.status_code} - {response.text}"
+                print(f"❌ {error_msg}")
+                if hasattr(current_app, 'logger'):
+                    current_app.logger.error(error_msg)
                 return False
                 
         except Exception as e:
-            current_app.logger.error(f"Erro ao salvar sinal no Supabase: {e}")
+            error_msg = f"Erro ao salvar sinal no Supabase: {e}"
+            print(f"❌ {error_msg}")
+            if hasattr(current_app, 'logger'):
+                current_app.logger.error(error_msg)
             return False
 
 # Instância global - modo tolerante
