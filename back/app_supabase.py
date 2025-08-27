@@ -52,6 +52,12 @@ from api_routes.restart_system import restart_system_bp
 from api_routes.binance_prices import binance_prices_bp
 from api_routes.scheduler_management import scheduler_management_bp
 
+# Importar sistema de keep-alive
+from core.keep_alive_system import init_keep_alive
+
+# Importar APIs de fallback
+from api_routes.fallback_apis import init_fallback_routes
+
 # Configurar CORS
 CORS(server, resources={
     r"/api/*": {
@@ -337,6 +343,21 @@ def create_app():
             print("⚠️ Sistema BTC não disponível - rotas BTC não registradas")
     except Exception as e:
         print(f"⚠️ Erro ao registrar rotas BTC: {e}")
+    
+    # Inicializar sistema de keep-alive
+    try:
+        keep_alive = init_keep_alive(server)
+        server.keep_alive_system = keep_alive
+        print("💓 Sistema Keep-Alive inicializado com sucesso")
+    except Exception as e:
+        print(f"⚠️ Erro ao inicializar Keep-Alive: {e}")
+    
+    # Inicializar APIs de fallback
+    try:
+        init_fallback_routes(server)
+        print("🛡️ APIs de Fallback inicializadas com sucesso")
+    except Exception as e:
+        print(f"⚠️ Erro ao inicializar APIs de Fallback: {e}")
     
     # Registrar rotas básicas
     @server.route('/api/health')
