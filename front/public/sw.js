@@ -4,7 +4,7 @@
  * Versão: 3.0 - Melhorias para experiência mobile
  */
 
-const CACHE_VERSION = '3.0';
+const CACHE_VERSION = '3.1';
 const CACHE_NAME = `1crypten-v${CACHE_VERSION}`;
 const STATIC_CACHE = `1crypten-static-v${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `1crypten-dynamic-v${CACHE_VERSION}`;
