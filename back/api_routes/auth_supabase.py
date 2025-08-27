@@ -421,42 +421,73 @@ def check_admin():
         if not auth_header or not auth_header.startswith('Bearer '):
             return jsonify({'is_admin': False, 'error': 'Token não fornecido'}), 401
 
-        supabase_access_token = auth_header.split(' ')[1]
+        token = auth_header.split(' ')[1]
 
-        # Obter dados do usuário do Supabase
-        response = requests.get(
-            f"{supabase_auth.supabase_url}/auth/v1/user",
-            headers={
-                'apikey': supabase_auth.supabase_anon_key,
-                'Authorization': f'Bearer {supabase_access_token}',
-                'Content-Type': 'application/json'
-            }
-        )
+        # Primeiro, tentar validar como token local (UUID)
+        session = supabase_auth.validate_token(token)
+        if session:
+            # Token local válido - buscar usuário por ID
+            user_id = session['user_id']
+            
+            # Tentar obter dados do usuário do Supabase usando o user_id
+            try:
+                response = requests.get(
+                    f"{supabase_auth.supabase_url}/rest/v1/users?id=eq.{user_id}",
+                    headers=supabase_auth.headers
+                )
+                
+                if response.ok:
+                    users = response.json()
+                    if users:
+                        user_email = users[0].get('email', '')
+                        is_admin = user_email == 'jonatasprojetos2013@gmail.com'
+                        
+                        return jsonify({
+                            'is_admin': is_admin,
+                            'user': {
+                                'id': user_id,
+                                'email': user_email,
+                                'name': user_email
+                            }
+                        }), 200
+            except Exception as e:
+                current_app.logger.error(f"Erro ao buscar usuário por ID: {e}")
         
-        if not response.ok:
-            return jsonify({'is_admin': False, 'error': 'Token inválido'}), 401
-
-        user_data = response.json()
-        user_email = user_data.get('email', '')
+        # Se não for token local, tentar como token do Supabase
+        try:
+            response = requests.get(
+                f"{supabase_auth.supabase_url}/auth/v1/user",
+                headers={
+                    'apikey': supabase_auth.supabase_anon_key,
+                    'Authorization': f'Bearer {token}',
+                    'Content-Type': 'application/json'
+                }
+            )
+            
+            if response.ok:
+                user_data = response.json()
+                user_email = user_data.get('email', '')
+                
+                # Verificar se é admin (por email específico ou campo is_admin)
+                is_admin = (
+                    user_email == 'jonatasprojetos2013@gmail.com' or
+                    user_data.get('user_metadata', {}).get('is_admin', False)
+                )
+                
+                return jsonify({
+                    'is_admin': is_admin,
+                    'user': {
+                        'id': user_data.get('id'),
+                        'email': user_email,
+                        'name': user_data.get('user_metadata', {}).get('name', user_email)
+                    }
+                }), 200
+        except Exception as e:
+            current_app.logger.error(f"Erro ao verificar token do Supabase: {e}")
         
-        # Verificar se é admin (por email específico ou campo is_admin)
-        is_admin = (
-            user_email == 'jonatasprojetos2013@gmail.com' or
-            user_data.get('user_metadata', {}).get('is_admin', False)
-        )
+        # Se chegou até aqui, token é inválido
+        return jsonify({'is_admin': False, 'error': 'Token inválido'}), 401
         
-        return jsonify({
-            'is_admin': is_admin,
-            'user': {
-                'id': user_data.get('id'),
-                'email': user_email,
-                'name': user_data.get('user_metadata', {}).get('name', user_email)
-            }
-        }), 200
-        
-    except requests.exceptions.HTTPError as http_err:
-        current_app.logger.error(f"HTTP error occurred checking admin: {http_err}")
-        return jsonify({'is_admin': False, 'error': 'Erro ao verificar permissões'}), 500
     except Exception as e:
         current_app.logger.error(f"Erro inesperado ao verificar admin: {e}")
         return jsonify({'is_admin': False, 'error': 'Erro interno do servidor'}), 500
