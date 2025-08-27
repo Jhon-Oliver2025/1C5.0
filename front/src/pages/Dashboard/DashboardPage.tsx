@@ -415,7 +415,6 @@ const DashboardPage: React.FC = () => {
           console.warn('Token pode estar inválido, mas continuando...');
           return;
         }
-        }
         throw new Error(`Erro na API: ${response.status}`);
       }
       

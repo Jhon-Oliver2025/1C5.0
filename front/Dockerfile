@@ -9,9 +9,8 @@ WORKDIR /app
 # Copiar package files
 COPY package*.json ./
 
-# Instalar dependências
-RUN npm ci --only=production --legacy-peer-deps
-RUN npm install --save-dev vite @vitejs/plugin-react typescript
+# Instalar todas as dependências (incluindo dev dependencies para build)
+RUN npm ci --legacy-peer-deps
 
 # Copiar arquivos de configuração
 COPY tsconfig*.json ./
