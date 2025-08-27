@@ -40,7 +40,7 @@ export const usePWA = (): PWAHook => {
     isInstallable: false,
     isInstalled: false,
     isStandalone: false,
-    canInstall: true, // Sempre permitir para teste
+    canInstall: false, // Detectar automaticamente
     platform: 'unknown',
     supportsNotifications: 'Notification' in window,
     supportsBackgroundSync: 'serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype,
@@ -92,20 +92,68 @@ export const usePWA = (): PWAHook => {
            (window.navigator as any).standalone === true;
   }, []);
 
+  // Verificar se PWA é instalável
+  const checkPWAInstallability = useCallback(async (): Promise<boolean> => {
+    try {
+      // Verificar se Service Worker está registrado
+      if (!('serviceWorker' in navigator)) {
+        return false;
+      }
+      
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (!registration) {
+        return false;
+      }
+      
+      // Verificar se manifest existe
+      const manifestLink = document.querySelector('link[rel="manifest"]') as HTMLLinkElement;
+      if (!manifestLink) {
+        return false;
+      }
+      
+      // Tentar buscar o manifest
+      try {
+        const response = await fetch(manifestLink.href);
+        const manifest = await response.json();
+        
+        // Verificar propriedades essenciais do manifest
+        if (!manifest.name || !manifest.start_url || !manifest.display || !manifest.icons) {
+          return false;
+        }
+        
+        // Verificar se tem ícones adequados
+        const hasValidIcons = manifest.icons.some((icon: any) => 
+          icon.sizes && (icon.sizes.includes('192x192') || icon.sizes.includes('512x512'))
+        );
+        
+        return hasValidIcons;
+      } catch {
+        return false;
+      }
+    } catch {
+      return false;
+    }
+  }, []);
+
   // Inicializar capacidades
   useEffect(() => {
-    const platform = detectPlatform();
-    const isInstalled = checkIfInstalled();
-    const isStandalone = checkIfStandalone();
+    const initializeCapabilities = async () => {
+      const platform = detectPlatform();
+      const isInstalled = checkIfInstalled();
+      const isStandalone = checkIfStandalone();
+      const isPWAInstallable = await checkPWAInstallability();
+      
+      setCapabilities(prev => ({
+         ...prev,
+         platform,
+         isInstalled,
+         isStandalone,
+         canInstall: !isInstalled && (platform === 'android' || (platform !== 'unknown' && isPWAInstallable))
+       }));
+    };
     
-    setCapabilities(prev => ({
-      ...prev,
-      platform,
-      isInstalled,
-      isStandalone,
-      canInstall: !isInstalled && platform !== 'unknown'
-    }));
-  }, [detectPlatform, checkIfInstalled, checkIfStandalone]);
+    initializeCapabilities();
+  }, [detectPlatform, checkIfInstalled, checkIfStandalone, checkPWAInstallability]);
 
   // Listener para evento de instalação
   useEffect(() => {
@@ -161,7 +209,7 @@ export const usePWA = (): PWAHook => {
     if (isIOS && isSafari) {
       instructions = 'Para instalar o 1Crypten no iOS:\n\n1. Toque no ícone de compartilhar (□↗) na barra inferior\n2. Role para baixo e toque em "Adicionar à Tela de Início"\n3. Toque em "Adicionar" para confirmar';
     } else if (isAndroid && isChrome) {
-      instructions = 'Para instalar o 1Crypten no Android:\n\n1. Toque nos 3 pontos (⋮) no canto superior direito\n2. Selecione "Instalar app" ou "Adicionar à tela inicial"\n3. Confirme a instalação';
+      instructions = 'Para instalar o 1Crypten no Android:\n\n1. Toque nos 3 pontos (⋮) no canto superior direito do Chrome\n2. Procure por "Instalar app" ou "Adicionar à tela inicial"\n3. Se não aparecer "Instalar app", selecione "Adicionar à tela inicial"\n4. Confirme a instalação\n\nNota: Aguarde alguns segundos na página para o Chrome reconhecer como app instalável.';
     } else if (isChrome) {
       instructions = 'Para instalar o 1Crypten:\n\n1. Procure o ícone de instalação na barra de endereços\n2. Ou toque nos 3 pontos e selecione "Instalar"\n3. Confirme a instalação';
     } else {
@@ -229,6 +277,8 @@ export const usePWA = (): PWAHook => {
 
   // Mostrar prompt de instalação
   const showInstallPrompt = useCallback(async (): Promise<boolean> => {
+    const platform = detectPlatform();
+    
     if (installPrompt) {
       try {
         await installPrompt.prompt();
@@ -247,11 +297,17 @@ export const usePWA = (): PWAHook => {
         return false;
       }
     } else {
-      // Se não há prompt nativo, mostrar instruções
+      // Para Android, sempre mostrar instruções mesmo sem prompt nativo
+      if (platform === 'android') {
+        addToHomeScreen();
+        return false;
+      }
+      
+      // Para outras plataformas, mostrar instruções
       addToHomeScreen();
       return false;
     }
-  }, [installPrompt, addToHomeScreen]);
+  }, [installPrompt, addToHomeScreen, detectPlatform]);
 
   // Solicitar permissão para notificações
   const requestNotificationPermission = useCallback(async (): Promise<NotificationPermission> => {
