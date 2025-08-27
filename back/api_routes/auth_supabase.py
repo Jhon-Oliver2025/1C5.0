@@ -32,9 +32,13 @@ class SupabaseAuth:
                 'Content-Type': 'application/json'
             }
             print("✅ Supabase Auth inicializado com sucesso")
+            print(f"DEBUG: SUPABASE_URL: {self.supabase_url}")
+            print(f"DEBUG: SUPABASE_ANON_KEY: {self.supabase_anon_key[:5]}...") # Evitar expor a chave completa
         else:
             self.headers = {}
             print("⚠️ Supabase Auth não disponível - variáveis de ambiente ausentes")
+            print(f"DEBUG: SUPABASE_URL: {self.supabase_url}")
+            print(f"DEBUG: SUPABASE_ANON_KEY: {self.supabase_anon_key}")
     
     def get_user_by_email(self, email: str) -> dict:
         """Busca usuário por email no Supabase"""
@@ -158,12 +162,12 @@ def login_supabase():
         if not data:
             return jsonify({'error': 'Dados não fornecidos'}), 400
             
-        username = data.get('username', '').strip()
+        email = data.get('email', '').strip()
         password = data.get('password', '')
         
         # Validação
-        if not username or not password:
-            return jsonify({'error': 'Username e senha são obrigatórios'}), 400
+        if not email or not password:
+            return jsonify({'error': 'Email e senha são obrigatórios'}), 400
         
         # Tentar fazer login com Supabase Auth
         try:
@@ -171,7 +175,7 @@ def login_supabase():
                 f"{supabase_auth.supabase_url}/auth/v1/token?grant_type=password",
                 headers=supabase_auth.headers,
                 json={
-                    "email": username,
+                    "email": email,
                     "password": password
                 }
             )
@@ -446,87 +450,6 @@ def get_logged_in_user():
         return jsonify({'error': 'Erro interno do servidor'}), 500
 
         
-        if not token:
-            return jsonify({'error': 'Erro ao criar sessão'}), 500
-        
-        # Resposta de sucesso
-        user_data = {
-            'id': user['id'],
-            'email': user['email'],
-            'is_admin': bool(user.get('is_admin', False))
-        }
-        
-        current_app.logger.info(f"Login bem-sucedido para: {user['email']}")
-        
-        return jsonify({
-            'success': True,
-            'message': 'Login realizado com sucesso',
-            'token': token,
-            'user': user_data
-        }), 200
-        
-    except Exception as e:
-        current_app.logger.error(f"Erro no login Supabase: {str(e)}")
-        return jsonify({'error': 'Erro interno do servidor'}), 500
-
-@auth_supabase_bp.route('/logout', methods=['POST'])
-def logout_supabase():
-    """Endpoint para logout"""
-    try:
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return jsonify({'error': 'Token não fornecido'}), 401
-        
-        token = auth_header.split(' ')[1]
-        
-        # Remover sessão
-        if hasattr(current_app, 'auth_sessions') and token in current_app.auth_sessions:
-            del current_app.auth_sessions[token]
-        
-        return jsonify({
-            'success': True,
-            'message': 'Logout realizado com sucesso'
-        }), 200
-        
-    except Exception as e:
-        current_app.logger.error(f"Erro no logout: {str(e)}")
-        return jsonify({'error': 'Erro interno do servidor'}), 500
-
-@auth_supabase_bp.route('/verify', methods=['GET'])
-def verify_token():
-    """Verifica se o token é válido"""
-    try:
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return jsonify({'error': 'Token não fornecido'}), 401
-        
-        token = auth_header.split(' ')[1]
-        session = supabase_auth.validate_token(token)
-        
-        if not session:
-            return jsonify({'error': 'Token inválido ou expirado'}), 401
-        
-        # Buscar dados atualizados do usuário
-        user = supabase_auth.get_user_by_email('jonatasprojetos2013@gmail.com')  # Simplificado para admin
-        
-        if not user:
-            return jsonify({'error': 'Usuário não encontrado'}), 404
-        
-        user_data = {
-            'id': user['id'],
-            'email': user['email'],
-            'is_admin': bool(user.get('is_admin', False))
-        }
-        
-        return jsonify({
-            'success': True,
-            'user': user_data
-        }), 200
-        
-    except Exception as e:
-        current_app.logger.error(f"Erro na verificação: {str(e)}")
-        return jsonify({'error': 'Erro interno do servidor'}), 500
-
 # Função para salvar sinais no Supabase
 def save_signal_to_supabase(signal_data: dict) -> bool:
     """Função global para salvar sinais no Supabase"""

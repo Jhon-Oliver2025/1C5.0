@@ -43,8 +43,8 @@ class SupabaseConfig:
             return False
         
         print("✅ Configuração do Supabase validada com sucesso")
-        print(f"✅ Supabase URL: {self.https://fvwdcsqucajnqupsprmo.supabase.co}")
-        print(f"✅ Supabase Anon Key: {self.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2d2Rjc3F1Y2FqbnF1cHNwcm1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMTAzNzUsImV4cCI6MjA2ODc4NjM3NX0.h7cNPa_WtSn7s1DDPAdBhLqUZYQLJbn3wDoAIMEFYyQ}")
+        print(f"✅ Supabase URL: {self.SUPABASE_URL}")
+        print(f"✅ Supabase Anon Key: {self.SUPABASE_ANON_KEY[:5]}...")
         print(f"✅ Database URL configurada")
         return True
     

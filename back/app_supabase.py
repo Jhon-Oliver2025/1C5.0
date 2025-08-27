@@ -10,6 +10,7 @@ import sys
 import time
 import threading
 import logging
+
 from datetime import datetime
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -22,8 +23,9 @@ load_dotenv()
 from config import server
 from supabase_config import supabase_config
 
-# Importar blueprints das rotas
-from api_routes.auth import auth_bp
+# Import blueprints das rotas
+
+
 from api_routes.signals import signals_bp
 from api_routes.trading import trading_bp
 from api_routes.users import users_bp
@@ -34,6 +36,8 @@ from api_routes.cleanup_status import cleanup_status_bp
 from api_routes.debug import debug_bp
 from api_routes.payments import payments_bp
 from api_routes.customers import customers_bp
+from api_routes.auth_supabase import auth_supabase_bp
+
 from api_routes.btc_signals import btc_signals_bp, init_btc_signals_routes
 from api_routes.signal_monitoring import signal_monitoring_bp, init_signal_monitoring_routes
 from api_routes.restart_system import restart_system_bp
@@ -48,6 +52,8 @@ CORS(server, resources={
         "allow_headers": ["Content-Type", "Authorization"]
     }
 })
+
+
 
 class KryptonBotSupabase:
     """
@@ -252,7 +258,7 @@ def create_app():
     server.bot_instance = bot
     
     # Registrar blueprints das rotas de API
-    server.register_blueprint(auth_bp, url_prefix='/api/auth')
+    server.register_blueprint(auth_supabase_bp, url_prefix='/api/auth')
     server.register_blueprint(signals_bp, url_prefix='/api/signals')
     server.register_blueprint(trading_bp, url_prefix='/api/trading')
     server.register_blueprint(users_bp, url_prefix='/api/users')
@@ -263,6 +269,7 @@ def create_app():
     server.register_blueprint(debug_bp, url_prefix='/api/debug')
     server.register_blueprint(payments_bp, url_prefix='/api/payments')
     server.register_blueprint(customers_bp, url_prefix='/api/customers')
+
     server.register_blueprint(binance_prices_bp)
     server.register_blueprint(scheduler_management_bp)
     try:
@@ -671,4 +678,52 @@ def main():
         sys.exit(1)
 
 if __name__ == '__main__':
-    main()
+    # Criar aplicação
+    app = create_app()
+    
+    # Configurações do servidor
+    port = int(os.getenv('FLASK_PORT', 5000))
+    host = os.getenv('FLASK_HOST', '0.0.0.0')
+    debug = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
+    
+    print(f"🌐 Servidor iniciando em {host}:{port}")
+    print(f"🔧 Debug mode: {debug}")
+    print(f"🗄️ Database: Supabase")
+    
+    # Iniciar servidor com configurações otimizadas
+    try:
+        if debug:
+            # Modo desenvolvimento
+            app.run(
+                host=host,
+                port=port,
+                debug=debug,
+                threaded=True
+            )
+        else:
+            # Modo produção com Waitress (mais estável que Flask dev server)
+            try:
+                from waitress import serve
+                print("🚀 Usando Waitress para produção...")
+                serve(
+                    app,
+                    host=host,
+                    port=port,
+                    threads=10,
+                    connection_limit=1000,
+                    cleanup_interval=30,
+                    channel_timeout=120
+                )
+            except ImportError:
+                print("⚠️ Waitress não disponível, usando Flask dev server")
+                app.run(
+                    host=host,
+                    port=port,
+                    debug=debug,
+                    threaded=True
+                )
+    except KeyboardInterrupt:
+        print("\n👋 Encerrando aplicação...")
+    except Exception as e:
+        print(f"❌ Erro ao iniciar servidor: {e}")
+        sys.exit(1)

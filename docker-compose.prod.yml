@@ -51,6 +51,8 @@ services:
       - SENDPULSE_CLIENT_SECRET=${SENDPULSE_CLIENT_SECRET}
       - SENDPULSE_SENDER_EMAIL=${SENDPULSE_SENDER_EMAIL}
       - SENDPULSE_API_URL=${SENDPULSE_API_URL}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
       - CORS_ORIGINS=https://1crypten.space,https://www.1crypten.space
       - API_BASE_URL=https://api.1crypten.space
       # Configurações de performance
