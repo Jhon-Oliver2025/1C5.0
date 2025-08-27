@@ -17,7 +17,7 @@ export const useAdminCheck = () => {
       setIsLoading(true);
       setError(null);
       
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       if (!token) {
         setIsAdmin(false);
         setIsLoading(false);
@@ -38,7 +38,7 @@ export const useAdminCheck = () => {
         setIsAdmin(false);
         if (response.status === 401) {
           // Token inválido, remover
-          localStorage.removeItem('token');
+          localStorage.removeItem('auth_token');
         }
       }
     } catch (err) {

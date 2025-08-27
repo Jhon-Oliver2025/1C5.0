@@ -147,7 +147,7 @@ const DashboardPage: React.FC = () => {
   // Função para buscar status das limpezas da API
   const fetchCleanupStatus = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       if (!token) {
         console.warn('Token não encontrado para buscar status das limpezas');
         return;
@@ -186,7 +186,7 @@ const DashboardPage: React.FC = () => {
   // Função para buscar dados do BTC
   const fetchBTCData = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       if (!token) {
         console.warn('Token não encontrado para buscar dados do BTC');
         return;
@@ -382,7 +382,7 @@ const DashboardPage: React.FC = () => {
       // Se falhar, tentar o endpoint antigo com autenticação
       if (!response.ok) {
         console.log('🔄 Tentando endpoint antigo com autenticação...');
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('auth_token');
         if (!token) {
           throw new Error('Token não encontrado');
         }
@@ -530,7 +530,7 @@ const DashboardPage: React.FC = () => {
       // Se falhar, tentar o endpoint antigo com autenticação
       if (!response.ok) {
         console.log('🔄 Tentando endpoint antigo para atualização...');
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('auth_token');
         if (!token) {
           console.warn('Token não encontrado para atualizar sinais');
           return;
@@ -627,7 +627,7 @@ const DashboardPage: React.FC = () => {
    * Função para realizar logout
    */
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('auth_token');
     navigate('/login');
   };
 

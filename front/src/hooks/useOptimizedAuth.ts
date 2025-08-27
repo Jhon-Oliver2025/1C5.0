@@ -28,7 +28,7 @@ interface LoginResponse {
 export const useOptimizedAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     // Inicialização otimizada - verificar token apenas uma vez
-    return !!localStorage.getItem('token');
+    return !!localStorage.getItem('auth_token');
   });
   
   const [user, setUser] = useState<UserData | null>(() => {
@@ -77,7 +77,7 @@ export const useOptimizedAuth = () => {
 
       if (response.ok && data.success) {
         // Salvar dados otimizados
-        localStorage.setItem('token', data.token);
+        localStorage.setItem('auth_token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         
         // Atualizar estado
@@ -107,7 +107,7 @@ export const useOptimizedAuth = () => {
    */
   const logout = useCallback(async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       if (token) {
         // Tentar fazer logout no servidor (não bloquear se falhar)
         fetch('/api/auth/logout', {
@@ -122,7 +122,7 @@ export const useOptimizedAuth = () => {
       }
     } finally {
       // Sempre limpar dados locais
-      localStorage.removeItem('token');
+      localStorage.removeItem('auth_token');
       localStorage.removeItem('user');
       setUser(null);
       setIsAuthenticated(false);
@@ -134,7 +134,7 @@ export const useOptimizedAuth = () => {
    * Verificação rápida de token (sem chamada à API)
    */
   const checkAuthStatus = useCallback(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
     const savedUser = localStorage.getItem('user');
     
     if (token && savedUser) {

@@ -247,7 +247,7 @@ const CRMPage: React.FC = () => {
   // Verificar se é admin
   useEffect(() => {
     const checkAdminAccess = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       if (!token) {
         navigate('/login', {
           state: {
@@ -282,7 +282,7 @@ const CRMPage: React.FC = () => {
           }
         } else {
           // Token inválido ou erro, redirecionar para login
-          localStorage.removeItem('token');
+          localStorage.removeItem('auth_token');
           navigate('/login', {
             state: {
               returnUrl: '/crm',

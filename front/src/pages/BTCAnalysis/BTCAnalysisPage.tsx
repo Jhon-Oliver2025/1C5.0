@@ -983,7 +983,7 @@ const BTCAnalysisPage: React.FC = () => {
   const checkAuthAndRedirect = (response: Response) => {
     if (response.status === 401 || response.status === 403) {
       console.warn('Token expirado, redirecionando para login...');
-      localStorage.removeItem('token');
+      localStorage.removeItem('auth_token');
       localStorage.removeItem('user');
       navigate('/login', { 
         state: { 
@@ -1082,7 +1082,7 @@ const BTCAnalysisPage: React.FC = () => {
 
   const loadMonitoredSignals = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       if (!token) {
         navigate('/login');
         return;
@@ -1110,7 +1110,7 @@ const BTCAnalysisPage: React.FC = () => {
 
   const loadExpiredSignals = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       if (!token) {
         navigate('/login');
         return;
@@ -1138,7 +1138,7 @@ const BTCAnalysisPage: React.FC = () => {
 
   const loadMonitoringStats = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       if (!token) {
         navigate('/login');
         return;
@@ -1164,7 +1164,7 @@ const BTCAnalysisPage: React.FC = () => {
   const loadBtcMetrics = async () => {
     try {
       console.log('🔄 Carregando métricas BTC...');
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       if (!token) {
         console.warn('❌ Token não encontrado, redirecionando para login');
         navigate('/login');

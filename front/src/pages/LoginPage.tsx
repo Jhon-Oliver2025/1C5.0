@@ -15,23 +15,21 @@ function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const hasNavigated = useRef(false);
 
-  useEffect(() => {
-    // Aguardar o carregamento inicial terminar
-    if (loading) {
-      console.log('⏳ Login: Aguardando carregamento da autenticação...');
-      return;
-    }
-
-    // Evitar múltiplas navegações
-    if (isAuthenticated && !hasNavigated.current && !NavigationFix.isNavigating()) {
-      console.log('🔄 Login: Usuário já autenticado, redirecionando...');
-      hasNavigated.current = true;
-      
-      NavigationFix.debounceNavigation(() => {
-        NavigationFix.safeNavigate(navigate, '/dashboard', { replace: true });
-      }, 300);
-    }
-  }, [isAuthenticated, loading, navigate]);
+  // Desabilitado temporariamente para evitar loop infinito
+  // useEffect(() => {
+  //   if (loading) {
+  //     console.log('⏳ Login: Aguardando carregamento da autenticação...');
+  //     return;
+  //   }
+  //   if (isAuthenticated && !hasNavigated.current) {
+  //     console.log('🔄 Login: Usuário já autenticado, redirecionando...');
+  //     hasNavigated.current = true;
+  //     setTimeout(() => {
+  //       console.log('🚀 Login: Forçando navegação para dashboard...');
+  //       window.location.href = '/dashboard';
+  //     }, 500);
+  //   }
+  // }, [isAuthenticated, loading]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,9 +40,11 @@ function LoginPage() {
     try {
       const result = await login(email, password);
       if (result.success) {
-        console.log('🎯 Login: Login bem-sucedido, aguardando redirecionamento automático...');
-        // Não navegar aqui - deixar o useEffect handle
-        // O AuthContext já atualizou isAuthenticated
+        console.log('🎯 Login: Login bem-sucedido, redirecionando...');
+        // Redirecionar imediatamente após login bem-sucedido
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 1000);
       } else {
         console.error('❌ Login: Falha -', result.error);
         setError(result.error || 'Email ou senha incorretos. Por favor, tente novamente.');

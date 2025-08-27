@@ -172,7 +172,7 @@ const ProtectedLesson: React.FC<ProtectedLessonProps> = ({
       setIsChecking(true);
       
       // Verificar se está logado
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       if (!token) {
         if (redirectToLogin) {
           navigate('/login', { 
@@ -303,7 +303,7 @@ const ProtectedLesson: React.FC<ProtectedLessonProps> = ({
       )}
 
       {/* Verificar se está logado */}
-      {!localStorage.getItem('token') ? (
+      {!localStorage.getItem('auth_token') ? (
         <>
           <ActionButton onClick={handleLoginRedirect}>
             <AlertCircle size={20} />

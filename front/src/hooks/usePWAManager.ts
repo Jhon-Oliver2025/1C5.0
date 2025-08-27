@@ -24,7 +24,7 @@ export const usePWAManager = () => {
    */
   const validateToken = useCallback(async (): Promise<boolean> => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       if (!token) return false;
 
       const response = await fetch('/api/auth/verify-token', {
@@ -38,7 +38,7 @@ export const usePWAManager = () => {
 
       if (!response.ok) {
         console.warn('🔐 PWA: Token inválido, removendo...');
-        localStorage.removeItem('token');
+        localStorage.removeItem('auth_token');
         return false;
       }
 
@@ -100,7 +100,7 @@ export const usePWAManager = () => {
           
           if (reconnected) {
             // Validar token se estiver logado
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('auth_token');
             if (token) {
               const tokenValid = await validateToken();
               if (!tokenValid) {

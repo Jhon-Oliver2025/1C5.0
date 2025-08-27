@@ -25,7 +25,7 @@ interface TokenVerifyResponse {
  * Verifica periodicamente se o token ainda é válido e renova quando necessário
  */
 export const useAuthToken = () => {
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [token, setToken] = useState<string | null>(localStorage.getItem('auth_token'));
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!token);
   const [user, setUser] = useState<UserData | null>(null);
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ export const useAuthToken = () => {
    * Função para verificar se o token ainda é válido
    */
   const verifyToken = useCallback(async (): Promise<boolean> => {
-    const currentToken = localStorage.getItem('token');
+    const currentToken = localStorage.getItem('auth_token');
     if (!currentToken) {
       setIsAuthenticated(false);
       setUser(null);
@@ -98,7 +98,7 @@ export const useAuthToken = () => {
    * Função para fazer logout
    */
   const logout = useCallback(() => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('auth_token');
     setToken(null);
     setIsAuthenticated(false);
     setUser(null);
@@ -109,7 +109,7 @@ export const useAuthToken = () => {
    * Função para fazer login
    */
   const login = useCallback((newToken: string, userData: UserData) => {
-    localStorage.setItem('token', newToken);
+    localStorage.setItem('auth_token', newToken);
     setToken(newToken);
     setIsAuthenticated(true);
     setUser(userData);
@@ -119,7 +119,7 @@ export const useAuthToken = () => {
    * Função para fazer requisições autenticadas
    */
   const authenticatedFetch = useCallback(async (url: string, options: RequestInit = {}) => {
-    const currentToken = localStorage.getItem('token');
+    const currentToken = localStorage.getItem('auth_token');
     if (!currentToken) {
       logout();
       throw new Error('Token não encontrado');
@@ -149,7 +149,7 @@ export const useAuthToken = () => {
         ...options,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
           ...options.headers
         }
       });

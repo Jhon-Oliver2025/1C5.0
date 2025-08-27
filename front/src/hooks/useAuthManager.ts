@@ -76,7 +76,7 @@ export const useAuthManager = () => {
           
           if (data.token) {
             // Salvar token
-            localStorage.setItem('token', data.token);
+            localStorage.setItem('auth_token', data.token);
             console.log('🔐 Auth: Token salvo no localStorage:', data.token);
             
             // Salvar dados do usuário se disponível
@@ -128,7 +128,7 @@ export const useAuthManager = () => {
    */
   const logout = useCallback(async (): Promise<void> => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       
       if (token) {
         // Tentar fazer logout no servidor
@@ -145,7 +145,7 @@ export const useAuthManager = () => {
       }
     } finally {
       // Sempre limpar dados locais
-      localStorage.removeItem('token');
+      localStorage.removeItem('auth_token');
       localStorage.removeItem('user');
       console.log('🔐 Auth: Logout realizado');
     }
@@ -155,7 +155,7 @@ export const useAuthManager = () => {
    * Verifica se o usuário está autenticado
    */
   const isAuthenticated = useCallback((): boolean => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
     return !!token;
   }, []);
 
@@ -176,7 +176,7 @@ export const useAuthManager = () => {
    * Obtém o token atual
    */
   const getToken = useCallback((): string | null => {
-    return localStorage.getItem('token');
+    return localStorage.getItem('auth_token');
   }, []);
 
   /**
@@ -230,7 +230,7 @@ export const useAuthManager = () => {
       if (response.ok) {
         const data = await response.json();
         if (data.token) {
-          localStorage.setItem('token', data.token);
+          localStorage.setItem('auth_token', data.token);
           console.log('🔐 Auth: Token renovado com sucesso');
           return true;
         }
