@@ -77,10 +77,12 @@ export const useAuthManager = () => {
           if (data.token) {
             // Salvar token
             localStorage.setItem('token', data.token);
+            console.log('🔐 Auth: Token salvo no localStorage:', data.token);
             
             // Salvar dados do usuário se disponível
             if (data.user) {
               localStorage.setItem('user', JSON.stringify(data.user));
+              console.log('🔐 Auth: Dados do usuário salvos no localStorage:', data.user);
             }
 
             console.log('✅ Auth: Login realizado com sucesso');
@@ -182,6 +184,7 @@ export const useAuthManager = () => {
    */
   const validateToken = useCallback(async (): Promise<boolean> => {
     const token = getToken();
+    console.log('🔐 Auth: Token recuperado do localStorage para validação:', token);
     if (!token) return false;
 
     try {
@@ -195,6 +198,7 @@ export const useAuthManager = () => {
       });
 
       if (!response.ok) {
+        console.warn('🔐 Auth: Validação de token falhou. Status:', response.status);
         await logout();
         return false;
       }

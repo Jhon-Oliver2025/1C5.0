@@ -1,26 +1,29 @@
 
-# Dockerfile para Produção
+# Dockerfile para Produï¿½ï¿½o
 FROM python:3.11-slim
 
-# Instalar dependências do sistema
+# Instalar dependï¿½ncias do sistema
 RUN apt-get update && apt-get install -y     gcc     && rm -rf /var/lib/apt/lists/*
 
-# Criar diretório de trabalho
+# Criar diretï¿½rio de trabalho
 WORKDIR /app
 
-# Copiar requirements e instalar dependências Python
+# Copiar requirements e instalar dependï¿½ncias Python
 COPY back/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar código da aplicação
+# Copiar cï¿½digo da aplicaï¿½ï¿½o
 COPY back/ .
 
-# Criar usuário não-root
+# Copiar arquivo de ambiente para produo
+COPY .env.production.template .env
+
+# Criar usuï¿½rio nï¿½o-root
 RUN useradd --create-home --shell /bin/bash app     && chown -R app:app /app
 USER app
 
 # Expor porta
 EXPOSE 5000
 
-# Comando de inicialização
+# Comando de inicializaï¿½ï¿½o
 CMD ["python", "app_supabase.py"]
