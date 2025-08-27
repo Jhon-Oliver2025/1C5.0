@@ -66,7 +66,7 @@ export const useOptimizedAuth = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          username: username.trim(), 
+          email: username.trim(), 
           password 
         }),
         signal: controller.signal
