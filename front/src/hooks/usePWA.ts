@@ -40,7 +40,7 @@ export const usePWA = (): PWAHook => {
     isInstallable: false,
     isInstalled: false,
     isStandalone: false,
-    canInstall: false,
+    canInstall: true, // Sempre permitir para teste
     platform: 'unknown',
     supportsNotifications: 'Notification' in window,
     supportsBackgroundSync: 'serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype,
@@ -150,25 +150,29 @@ export const usePWA = (): PWAHook => {
 
   // Mostrar prompt de instalação
   const showInstallPrompt = useCallback(async (): Promise<boolean> => {
-    if (!installPrompt) {
-      return false;
-    }
-
-    try {
-      await installPrompt.prompt();
-      const choiceResult = await installPrompt.userChoice;
-      
-      if (choiceResult.outcome === 'accepted') {
-        setInstallPrompt(null);
-        return true;
+    if (installPrompt) {
+      try {
+        await installPrompt.prompt();
+        const choiceResult = await installPrompt.userChoice;
+        
+        if (choiceResult.outcome === 'accepted') {
+          setInstallPrompt(null);
+          return true;
+        }
+        
+        return false;
+      } catch (error) {
+        console.error('Erro ao mostrar prompt de instalação:', error);
+        // Fallback para instruções manuais
+        addToHomeScreen();
+        return false;
       }
-      
-      return false;
-    } catch (error) {
-      console.error('Erro ao mostrar prompt de instalação:', error);
+    } else {
+      // Se não há prompt nativo, mostrar instruções
+      addToHomeScreen();
       return false;
     }
-  }, [installPrompt]);
+  }, [installPrompt, addToHomeScreen]);
 
   // Solicitar permissão para notificações
   const requestNotificationPermission = useCallback(async (): Promise<NotificationPermission> => {
@@ -221,13 +225,82 @@ export const usePWA = (): PWAHook => {
 
   // Adicionar à tela inicial (iOS)
   const addToHomeScreen = useCallback((): void => {
-    if (capabilities.platform === 'ios' && !capabilities.isInstalled) {
-      // Para iOS, mostrar instruções
-      alert('Para instalar o app:\n1. Toque no ícone de compartilhar\n2. Selecione "Adicionar à Tela de Início"');
-    } else if (installPrompt) {
-      showInstallPrompt();
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isIOS = /iphone|ipad|ipod/.test(userAgent);
+    const isAndroid = /android/.test(userAgent);
+    const isChrome = /chrome/.test(userAgent);
+    const isSafari = /safari/.test(userAgent) && !/chrome/.test(userAgent);
+    
+    let instructions = '';
+    
+    if (isIOS && isSafari) {
+      instructions = 'Para instalar o 1Crypten no iOS:\n\n1. Toque no ícone de compartilhar (□↗) na barra inferior\n2. Role para baixo e toque em "Adicionar à Tela de Início"\n3. Toque em "Adicionar" para confirmar';
+    } else if (isAndroid && isChrome) {
+      instructions = 'Para instalar o 1Crypten no Android:\n\n1. Toque nos 3 pontos (⋮) no canto superior direito\n2. Selecione "Instalar app" ou "Adicionar à tela inicial"\n3. Confirme a instalação';
+    } else if (isChrome) {
+      instructions = 'Para instalar o 1Crypten:\n\n1. Procure o ícone de instalação na barra de endereços\n2. Ou toque nos 3 pontos e selecione "Instalar"\n3. Confirme a instalação';
+    } else {
+      instructions = 'Para instalar o 1Crypten:\n\n1. Procure a opção "Instalar app" no menu do navegador\n2. Ou "Adicionar à tela inicial"\n3. Confirme a instalação';
     }
-  }, [capabilities.platform, capabilities.isInstalled, installPrompt, showInstallPrompt]);
+    
+    // Criar modal personalizado
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 20px;
+      box-sizing: border-box;
+    `;
+    
+    modal.innerHTML = `
+      <div style="
+        background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+        border-radius: 16px;
+        padding: 24px;
+        max-width: 400px;
+        width: 100%;
+        color: white;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      ">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="font-size: 48px; margin-bottom: 12px;">📱</div>
+          <h2 style="margin: 0; color: #64FFDA; font-size: 24px; font-weight: 700;">Instalar 1Crypten</h2>
+        </div>
+        <p style="margin: 16px 0; line-height: 1.6; white-space: pre-line; color: #e0e0e0; font-size: 14px;">${instructions}</p>
+        <button onclick="this.parentElement.parentElement.remove()" style="
+          background: linear-gradient(135deg, #646cff, #4ade80);
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          width: 100%;
+          font-size: 16px;
+          margin-top: 16px;
+        ">Entendi</button>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Remover modal ao clicar fora
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.remove();
+      }
+    });
+  }, []);
 
   // Compartilhar conteúdo
   const shareContent = useCallback(async (data: ShareData): Promise<boolean> => {
