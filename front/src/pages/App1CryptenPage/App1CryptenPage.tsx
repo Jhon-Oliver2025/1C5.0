@@ -268,7 +268,7 @@ const App1CryptenPage: React.FC = () => {
             )}
           </button>
         </div>
-      </section></div>
+      </section>
       
       {/* Componentes PWA */}
       {showPrompt && (

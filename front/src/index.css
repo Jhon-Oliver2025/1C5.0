@@ -1,3 +1,6 @@
+/* Importar estilos PWA nativos */
+@import url('./styles/pwa-native.css');
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -134,9 +137,6 @@ body {
 }
 
 /* ===== ESTILOS PWA NATIVOS ===== */
-
-/* Importar estilos PWA nativos */
-@import url('./styles/pwa-native.css');
 
 /* Configurações específicas para PWA instalado */
 .pwa-mode {
