@@ -27,6 +27,7 @@ import CheckoutDemoPage from './pages/CheckoutDemo/CheckoutDemoPage';
 import CheckoutDespertarCryptoPage from './pages/CheckoutDespertarCrypto/CheckoutDespertarCryptoPage';
 import SalesPage from './pages/SalesPage/SalesPage';
 import SalesAdminPage from './pages/SalesAdmin/SalesAdminPage';
+import AdminRoute from './components/AdminRoute/AdminRoute';
 import CRMPage from './pages/CRM/CRMPage';
 import BTCAnalysisPage from './pages/BTCAnalysis/BTCAnalysisPage';
 import TradingSimulationPage from './pages/TradingSimulationPage/TradingSimulationPage';
@@ -117,11 +118,11 @@ function AppRoutes() {
       <Route path="/checkout/despertar-crypto" element={<CheckoutDespertarCryptoPage />} />
       <Route path="/sales" element={<SalesPage />} />
       <Route path="/sales-admin" element={
-        <ProtectedRoute>
+        <AdminRoute>
           <MainLayout>
             <SalesAdminPage />
           </MainLayout>
-        </ProtectedRoute>
+        </AdminRoute>
       } />
       
       {/* Rotas das aulas do Despertar Crypto */}
@@ -148,11 +149,11 @@ function AppRoutes() {
       } />
       
       <Route path="/simulacao-trading" element={
-        <ProtectedRoute>
+        <AdminRoute>
           <MainLayout>
             <TradingSimulationPage />
           </MainLayout>
-        </ProtectedRoute>
+        </AdminRoute>
       } />
       
       <Route path="/estatisticas" element={
@@ -210,19 +211,19 @@ function AppRoutes() {
       } />
       
       <Route path="/crm" element={
-        <ProtectedRoute>
+        <AdminRoute>
           <MainLayout>
             <CRMPage />
           </MainLayout>
-        </ProtectedRoute>
+        </AdminRoute>
       } />
       
       <Route path="/btc-analysis" element={
-        <ProtectedRoute>
+        <AdminRoute>
           <MainLayout>
             <BTCAnalysisPage />
           </MainLayout>
-        </ProtectedRoute>
+        </AdminRoute>
       } />
       
       {/* Rota catch-all - redireciona para landing page */}
