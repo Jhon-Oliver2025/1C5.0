@@ -1,0 +1,414 @@
+/**
+ * Estilos PWA Nativos - Experiência de App Nativo
+ * Melhorias para tornar o PWA mais próximo de um app nativo
+ */
+
+/* ===== CONFIGURAÇÕES GLOBAIS PWA ===== */
+
+/* Variáveis CSS para consistência */
+:root {
+  /* Cores do tema */
+  --primary-color: #000000;
+  --secondary-color: #1a1a1a;
+  --accent-color: #646cff;
+  --text-primary: rgba(255, 255, 255, 0.87);
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  
+  /* Espaçamentos seguros para PWA */
+  --safe-area-top: env(safe-area-inset-top, 0);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0);
+  --safe-area-left: env(safe-area-inset-left, 0);
+  --safe-area-right: env(safe-area-inset-right, 0);
+  
+  /* Configurações de animação */
+  --animation-fast: 0.15s;
+  --animation-normal: 0.3s;
+  --animation-slow: 0.5s;
+  --easing-native: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ===== CONFIGURAÇÕES BASE PARA PWA ===== */
+
+/* Configuração para app instalado */
+@media (display-mode: standalone) {
+  body {
+    /* Remove seleção de texto para experiência mais nativa */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    
+    /* Remove highlight de toque */
+    -webkit-tap-highlight-color: transparent;
+    
+    /* Melhora a renderização */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+    /* Configurações de viewport */
+    overflow-x: hidden;
+    position: relative;
+  }
+  
+  /* Configuração da área segura */
+  #root {
+    padding-top: var(--safe-area-top);
+    padding-bottom: var(--safe-area-bottom);
+    padding-left: var(--safe-area-left);
+    padding-right: var(--safe-area-right);
+    min-height: calc(100vh - var(--safe-area-top) - var(--safe-area-bottom));
+  }
+}
+
+/* ===== SPLASH SCREEN PERSONALIZADA ===== */
+
+.pwa-splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 1;
+  transition: opacity var(--animation-slow) var(--easing-native);
+}
+
+.pwa-splash-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pwa-splash-logo {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 24px;
+  animation: pulse-logo 2s infinite var(--easing-native);
+}
+
+.pwa-splash-title {
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.pwa-splash-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.pwa-splash-loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid var(--accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes pulse-logo {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ===== NAVEGAÇÃO NATIVA ===== */
+
+/* Estilo para navegação que simula app nativo */
+.native-navigation {
+  position: sticky;
+  top: var(--safe-area-top);
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1000;
+  transition: transform var(--animation-fast) var(--easing-native);
+}
+
+.native-navigation.hidden {
+  transform: translateY(-100%);
+}
+
+/* ===== GESTOS NATIVOS ===== */
+
+/* Configurações para gestos de swipe */
+.swipeable {
+  touch-action: pan-x pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Feedback visual para toques */
+.touchable {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform var(--animation-fast) var(--easing-native);
+}
+
+.touchable:active {
+  transform: scale(0.98);
+}
+
+.touchable::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width var(--animation-normal) var(--easing-native),
+              height var(--animation-normal) var(--easing-native);
+  pointer-events: none;
+}
+
+.touchable:active::before {
+  width: 200px;
+  height: 200px;
+}
+
+/* ===== ANIMAÇÕES NATIVAS ===== */
+
+/* Animação de entrada para páginas */
+.page-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity var(--animation-normal) var(--easing-native),
+              transform var(--animation-normal) var(--easing-native);
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: opacity var(--animation-normal) var(--easing-native),
+              transform var(--animation-normal) var(--easing-native);
+}
+
+/* Animação de slide up para modais */
+.modal-enter {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+.modal-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity var(--animation-normal) var(--easing-native),
+              transform var(--animation-normal) var(--easing-bounce);
+}
+
+.modal-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.modal-exit-active {
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity var(--animation-fast) var(--easing-native),
+              transform var(--animation-fast) var(--easing-native);
+}
+
+/* ===== COMPONENTES NATIVOS ===== */
+
+/* Botões com estilo nativo */
+.native-button {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--animation-fast) var(--easing-native);
+  box-shadow: 0 4px 12px rgba(100, 108, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.native-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(100, 108, 255, 0.4);
+}
+
+.native-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(100, 108, 255, 0.3);
+}
+
+/* Cards com estilo nativo */
+.native-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 12px 0;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all var(--animation-fast) var(--easing-native);
+}
+
+.native-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== OTIMIZAÇÕES DE PERFORMANCE ===== */
+
+/* Otimização para scroll suave */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Otimização para animações */
+.gpu-accelerated {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
+}
+
+/* ===== RESPONSIVIDADE NATIVA ===== */
+
+/* Configurações para diferentes tamanhos de tela */
+@media (max-width: 768px) {
+  .native-button {
+    padding: 14px 20px;
+    font-size: 14px;
+  }
+  
+  .native-card {
+    padding: 16px;
+    margin: 8px 0;
+  }
+}
+
+/* Configurações para landscape em mobile */
+@media (orientation: landscape) and (max-height: 500px) {
+  .pwa-splash-screen {
+    flex-direction: row;
+    gap: 24px;
+  }
+  
+  .pwa-splash-logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 0;
+  }
+}
+
+/* ===== CONFIGURAÇÕES PARA DARK MODE ===== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #000000;
+    --secondary-color: #1a1a1a;
+    --text-primary: rgba(255, 255, 255, 0.87);
+    --text-secondary: rgba(255, 255, 255, 0.6);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --primary-color: #ffffff;
+    --secondary-color: #f5f5f5;
+    --text-primary: rgba(0, 0, 0, 0.87);
+    --text-secondary: rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* ===== CONFIGURAÇÕES PARA REDUCED MOTION ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .pwa-splash-logo {
+    animation: none;
+  }
+  
+  .pwa-splash-loader {
+    animation: none;
+    border: 3px solid var(--accent-color);
+  }
+}
+
+/* ===== CONFIGURAÇÕES PARA HIGH CONTRAST ===== */
+
+@media (prefers-contrast: high) {
+  .native-card {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .native-button {
+    border: 2px solid var(--accent-color);
+  }
+}
+
+/* ===== UTILITÁRIOS ===== */
+
+/* Classe para esconder elementos em PWA */
+@media (display-mode: standalone) {
+  .hide-in-pwa {
+    display: none !important;
+  }
+}
+
+/* Classe para mostrar apenas em PWA */
+.show-only-in-pwa {
+  display: none;
+}
+
+@media (display-mode: standalone) {
+  .show-only-in-pwa {
+    display: block;
+  }
+}
+
+/* Classe para texto não selecionável */
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Classe para elementos tocáveis */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

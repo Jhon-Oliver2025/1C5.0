@@ -95,56 +95,127 @@
     
     <div id="root"></div>
     
-    <!-- Service Worker Registration - TEMPORARIAMENTE DESABILITADO -->
+    <!-- Service Worker Registration - PWA Nativo -->
     <script>
-      // Service Worker temporariamente desabilitado para desenvolvimento
-      console.log('⚠️ Service Worker desabilitado durante desenvolvimento das páginas Elementor');
-      
-      // Desregistrar Service Worker existente se houver
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-          for(let registration of registrations) {
-            registration.unregister();
-            console.log('🗑️ Service Worker desregistrado:', registration.scope);
-          }
-        });
-      }
-      
-      /*
-      // Código original do Service Worker (reativar após desenvolvimento)
+      // Service Worker para experiência PWA nativa
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', async () => {
           try {
-            const registration = await navigator.serviceWorker.register('/sw.js');
+            const registration = await navigator.serviceWorker.register('/sw.js', {
+              scope: '/'
+            });
             console.log('✅ Service Worker registrado:', registration.scope);
             
             // Verificar atualizações
             registration.addEventListener('updatefound', () => {
               const newWorker = registration.installing;
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // Nova versão disponível
-                  if (confirm('Nova versão disponível! Recarregar página?')) {
-                    window.location.reload();
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // Nova versão disponível - mostrar notificação nativa
+                    showUpdateNotification();
                   }
-                }
-              });
+                });
+              }
             });
+            
+            // Verificar se há atualizações pendentes
+            if (registration.waiting) {
+              showUpdateNotification();
+            }
+            
           } catch (error) {
             console.error('❌ Erro ao registrar Service Worker:', error);
           }
         });
       }
-      */
       
-      // PWA Install Prompt removido - agora gerenciado pela página dedicada
-      console.log('🎯 Service Worker ativo - App 1Crypten pronto para instalação via /app');
-      
-      // Detectar se já está instalado
-      if (window.matchMedia('(display-mode: standalone)').matches) {
-        console.log('🎉 App 1Crypten já está instalado!');
-        document.body.classList.add('app-installed');
+      // Função para mostrar notificação de atualização
+      function showUpdateNotification() {
+        // Criar notificação nativa de atualização
+        const updateBanner = document.createElement('div');
+        updateBanner.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          background: linear-gradient(135deg, #646cff, #4ade80);
+          color: white;
+          padding: 12px 16px;
+          text-align: center;
+          font-size: 14px;
+          font-weight: 500;
+          z-index: 10001;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+          transform: translateY(-100%);
+          transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        `;
+        
+        updateBanner.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: space-between; max-width: 400px; margin: 0 auto;">
+            <span>🚀 Nova versão disponível!</span>
+            <button onclick="updateApp()" style="
+              background: rgba(255,255,255,0.2);
+              border: none;
+              color: white;
+              padding: 6px 12px;
+              border-radius: 6px;
+              font-size: 12px;
+              font-weight: 600;
+              cursor: pointer;
+              margin-left: 12px;
+            ">Atualizar</button>
+          </div>
+        `;
+        
+        document.body.appendChild(updateBanner);
+        
+        // Animar entrada
+        setTimeout(() => {
+          updateBanner.style.transform = 'translateY(0)';
+        }, 100);
+        
+        // Função global para atualizar
+        window.updateApp = () => {
+          updateBanner.style.transform = 'translateY(-100%)';
+          setTimeout(() => {
+            window.location.reload();
+          }, 300);
+        };
       }
+      
+      // Detectar modo PWA e aplicar classes
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('🎉 App 1Crypten rodando em modo PWA!');
+        document.body.classList.add('app-installed', 'pwa-mode');
+        document.documentElement.classList.add('pwa-standalone');
+      }
+      
+      // Detectar iOS Safari em modo standalone
+      if (window.navigator.standalone === true) {
+        console.log('🍎 App 1Crypten rodando no iOS!');
+        document.body.classList.add('app-installed', 'pwa-mode', 'ios-standalone');
+        document.documentElement.classList.add('pwa-standalone', 'ios-pwa');
+      }
+      
+      // Configurações específicas para PWA
+      if (document.body.classList.contains('pwa-mode')) {
+        // Prevenir zoom em inputs (iOS)
+        const metaViewport = document.querySelector('meta[name="viewport"]');
+        if (metaViewport) {
+          metaViewport.setAttribute('content', 
+            'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover'
+          );
+        }
+        
+        // Configurar status bar para iOS
+        const statusBarMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+        if (statusBarMeta) {
+          statusBarMeta.setAttribute('content', 'black-translucent');
+        }
+      }
+      
+      console.log('🎯 PWA 1Crypten - Experiência nativa ativada!');
     </script>
     
     <script type="module" src="/src/main.tsx"></script>

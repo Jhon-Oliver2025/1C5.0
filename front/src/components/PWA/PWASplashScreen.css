@@ -1,0 +1,374 @@
+/**
+ * Estilos para PWA Splash Screen
+ * Experiência nativa de inicialização
+ */
+
+.pwa-splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 1;
+  transition: opacity 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+  overflow: hidden;
+}
+
+.pwa-splash-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pwa-splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  position: relative;
+}
+
+.pwa-splash-logo {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 24px;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(100, 108, 255, 0.3);
+  animation: pulse-logo 2s infinite cubic-bezier(0.4, 0.0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.pwa-splash-title {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-align: center;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  animation: fade-in-up 0.8s cubic-bezier(0.4, 0.0, 0.2, 1) 0.2s both;
+}
+
+.pwa-splash-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  font-weight: 400;
+  text-align: center;
+  margin-bottom: 40px;
+  max-width: 280px;
+  line-height: 1.4;
+  animation: fade-in-up 0.8s cubic-bezier(0.4, 0.0, 0.2, 1) 0.4s both;
+}
+
+.pwa-splash-loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: fade-in-up 0.8s cubic-bezier(0.4, 0.0, 0.2, 1) 0.6s both;
+}
+
+.pwa-splash-loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid #646cff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.pwa-splash-loading-text {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.pwa-splash-ready {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: fade-in-scale 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
+}
+
+.pwa-splash-check {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.4);
+  animation: check-bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
+}
+
+.pwa-splash-ready-text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.pwa-splash-progress {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  animation: fade-in 0.8s cubic-bezier(0.4, 0.0, 0.2, 1) 0.8s both;
+}
+
+.pwa-splash-progress-bar {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #646cff, #4ade80);
+  border-radius: 2px;
+  animation: progress-fill 2s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+}
+
+/* ===== ANIMAÇÕES ===== */
+
+@keyframes pulse-logo {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 8px 32px rgba(100, 108, 255, 0.3);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 0 12px 40px rgba(100, 108, 255, 0.5);
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes check-bounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes progress-fill {
+  0% {
+    width: 0;
+  }
+  70% {
+    width: 85%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+/* ===== RESPONSIVIDADE ===== */
+
+@media (max-width: 768px) {
+  .pwa-splash-logo {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 20px;
+  }
+  
+  .pwa-splash-title {
+    font-size: 28px;
+  }
+  
+  .pwa-splash-subtitle {
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+  
+  .pwa-splash-progress {
+    width: 160px;
+    bottom: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pwa-splash-logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 16px;
+  }
+  
+  .pwa-splash-title {
+    font-size: 24px;
+  }
+  
+  .pwa-splash-subtitle {
+    font-size: 13px;
+    margin-bottom: 28px;
+  }
+  
+  .pwa-splash-content {
+    padding: 16px;
+  }
+}
+
+/* ===== ORIENTAÇÃO LANDSCAPE ===== */
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .pwa-splash-content {
+    flex-direction: row;
+    gap: 32px;
+    align-items: center;
+  }
+  
+  .pwa-splash-logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 0;
+  }
+  
+  .pwa-splash-title {
+    font-size: 24px;
+    margin-bottom: 4px;
+  }
+  
+  .pwa-splash-subtitle {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  .pwa-splash-progress {
+    bottom: 20px;
+  }
+}
+
+/* ===== CONFIGURAÇÕES DE ACESSIBILIDADE ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  .pwa-splash-logo {
+    animation: none;
+  }
+  
+  .pwa-splash-loader {
+    animation: none;
+    border: 3px solid #646cff;
+  }
+  
+  .pwa-splash-title,
+  .pwa-splash-subtitle,
+  .pwa-splash-loader-container,
+  .pwa-splash-progress {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  
+  .pwa-splash-progress-bar {
+    animation: none;
+    width: 100%;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .pwa-splash-screen {
+    background: #000000;
+  }
+  
+  .pwa-splash-title {
+    color: #ffffff;
+  }
+  
+  .pwa-splash-subtitle {
+    color: #cccccc;
+  }
+  
+  .pwa-splash-loader {
+    border-color: rgba(255, 255, 255, 0.3);
+    border-top-color: #646cff;
+  }
+}
+
+/* ===== DARK MODE ===== */
+
+@media (prefers-color-scheme: light) {
+  .pwa-splash-screen {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%);
+  }
+  
+  .pwa-splash-title {
+    color: rgba(0, 0, 0, 0.9);
+    text-shadow: none;
+  }
+  
+  .pwa-splash-subtitle {
+    color: rgba(0, 0, 0, 0.6);
+  }
+  
+  .pwa-splash-loading-text {
+    color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .pwa-splash-ready-text {
+    color: rgba(0, 0, 0, 0.7);
+  }
+  
+  .pwa-splash-progress {
+    background: rgba(0, 0, 0, 0.1);
+  }
+  
+  .pwa-splash-loader {
+    border-color: rgba(0, 0, 0, 0.1);
+    border-top-color: #646cff;
+  }
+}

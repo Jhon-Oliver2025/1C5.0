@@ -132,3 +132,94 @@ body {
     pointer-events: none;
   }
 }
+
+/* ===== ESTILOS PWA NATIVOS ===== */
+
+/* Importar estilos PWA nativos */
+@import url('./styles/pwa-native.css');
+
+/* Configurações específicas para PWA instalado */
+.pwa-mode {
+  /* Remove seleção de texto para experiência mais nativa */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  
+  /* Remove highlight de toque */
+  -webkit-tap-highlight-color: transparent;
+  
+  /* Melhora a renderização */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Configurações específicas para iOS PWA */
+.ios-standalone {
+  /* Configurações específicas para iOS em modo standalone */
+  padding-top: env(safe-area-inset-top, 20px);
+}
+
+/* Configurações para elementos tocáveis */
+.pwa-mode button,
+.pwa-mode .touchable,
+.pwa-mode [role="button"] {
+  min-height: 44px;
+  min-width: 44px;
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.pwa-mode button:active,
+.pwa-mode .touchable:active,
+.pwa-mode [role="button"]:active {
+  transform: scale(0.98);
+}
+
+/* Configurações para scroll suave */
+.pwa-mode {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Configurações para animações nativas */
+.pwa-mode * {
+  transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Configurações para inputs em PWA */
+.pwa-mode input,
+.pwa-mode textarea,
+.pwa-mode select {
+  font-size: 16px; /* Previne zoom no iOS */
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Configurações para modais em PWA */
+.pwa-mode .modal,
+.pwa-mode .dialog {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Configurações para navegação em PWA */
+.pwa-mode .navbar,
+.pwa-mode .header {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Configurações para cards em PWA */
+.pwa-mode .card {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.pwa-mode .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
