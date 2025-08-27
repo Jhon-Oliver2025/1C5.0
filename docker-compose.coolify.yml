@@ -175,7 +175,7 @@ services:
                   proxy_buffering off;
                   proxy_request_buffering off;
                   proxy_http_version 1.1;
-                  proxy_set_header Connection "";
+                  proxy_set_header Connection "keep-alive";
                   proxy_next_upstream error timeout http_502 http_503 http_504;
               }
               
