@@ -9,26 +9,29 @@ function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, isAuth } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isAuth) {
+    if (isAuthenticated) {
+      console.log('🔄 Login: Usuário já autenticado, redirecionando...');
       navigate('/dashboard', { replace: true });
     }
-  }, [isAuth, navigate]);
+  }, [isAuthenticated, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
 
-    const success = await login(email, password);
-    if (success) {
+    const result = await login(email, password);
+    if (result.success) {
+      console.log('🎯 Login: Redirecionando para dashboard...');
       navigate('/dashboard', { replace: true });
     } else {
-      setError('Email ou senha incorretos. Por favor, tente novamente.');
+      console.error('❌ Login: Falha -', result.error);
+      setError(result.error || 'Email ou senha incorretos. Por favor, tente novamente.');
     }
     setIsLoading(false);
   };
