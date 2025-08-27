@@ -29,6 +29,45 @@ class SupabaseConfig:
         """
         Valida se todas as configurações necessárias estão presentes
         """
+        print("\n🔍 === DIAGNÓSTICO SUPABASE DETALHADO ===")
+        print(f"📍 Verificando variáveis de ambiente...")
+        
+        # Verificar cada variável individualmente
+        print(f"\n📋 SUPABASE_URL:")
+        if self.SUPABASE_URL:
+            print(f"   ✅ Definida: {self.SUPABASE_URL}")
+        else:
+            print(f"   ❌ NÃO DEFINIDA ou VAZIA")
+            
+        print(f"\n📋 SUPABASE_ANON_KEY:")
+        if self.SUPABASE_ANON_KEY:
+            print(f"   ✅ Definida: {self.SUPABASE_ANON_KEY[:20]}...{self.SUPABASE_ANON_KEY[-10:]}")
+            print(f"   📏 Tamanho: {len(self.SUPABASE_ANON_KEY)} caracteres")
+        else:
+            print(f"   ❌ NÃO DEFINIDA ou VAZIA")
+            
+        print(f"\n📋 SUPABASE_SERVICE_ROLE_KEY:")
+        if self.SUPABASE_SERVICE_ROLE_KEY:
+            print(f"   ✅ Definida: {self.SUPABASE_SERVICE_ROLE_KEY[:20]}...{self.SUPABASE_SERVICE_ROLE_KEY[-10:]}")
+            print(f"   📏 Tamanho: {len(self.SUPABASE_SERVICE_ROLE_KEY)} caracteres")
+        else:
+            print(f"   ⚠️ NÃO DEFINIDA (opcional para algumas operações)")
+            
+        print(f"\n📋 SUPABASE_DATABASE_URL:")
+        if self.DATABASE_URL:
+            # Mascarar senha na URL
+            masked_url = self.DATABASE_URL
+            if '@' in masked_url and ':' in masked_url:
+                parts = masked_url.split('@')
+                if len(parts) == 2:
+                    user_pass = parts[0].split('//')[-1]
+                    if ':' in user_pass:
+                        user, password = user_pass.split(':', 1)
+                        masked_url = masked_url.replace(f':{password}@', ':***@')
+            print(f"   ✅ Definida: {masked_url}")
+        else:
+            print(f"   ❌ NÃO DEFINIDA ou VAZIA")
+        
         required_vars = {
             'SUPABASE_URL': self.SUPABASE_URL,
             'SUPABASE_ANON_KEY': self.SUPABASE_ANON_KEY,
@@ -37,15 +76,17 @@ class SupabaseConfig:
         
         missing_vars = [var for var, value in required_vars.items() if not value]
         
+        print(f"\n📊 RESULTADO DA VALIDAÇÃO:")
         if missing_vars:
-            print(f"⚠️ Variáveis de ambiente não definidas: {', '.join(missing_vars)}")
-            print("🔧 Executando em modo degradado")
+            print(f"   ❌ Variáveis faltando: {', '.join(missing_vars)}")
+            print(f"   🔧 Executando em modo degradado")
+            print(f"   ⚠️ O Supabase Auth NÃO funcionará!")
             return False
         
-        print("✅ Configuração do Supabase validada com sucesso")
-        print(f"✅ Supabase URL: {self.SUPABASE_URL}")
-        print(f"✅ Supabase Anon Key: {self.SUPABASE_ANON_KEY[:5]}...")
-        print(f"✅ Database URL configurada")
+        print(f"   ✅ Todas as variáveis obrigatórias estão configuradas")
+        print(f"   ✅ Supabase Auth inicializado com sucesso")
+        print(f"   🚀 Sistema pronto para autenticação")
+        print("🔍 === FIM DO DIAGNÓSTICO SUPABASE ===\n")
         return True
     
     def get_database_url(self):

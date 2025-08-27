@@ -23,6 +23,14 @@ load_dotenv()
 from config import server
 from supabase_config import supabase_config
 
+# Log de inicialização do Supabase
+print("\n🚀 === INICIALIZANDO APLICAÇÃO COM SUPABASE ===")
+print(f"📅 Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+print(f"🔧 Configuração Supabase carregada: {'✅ Válida' if supabase_config.is_configured else '❌ Inválida'}")
+if not supabase_config.is_configured:
+    print("⚠️ ATENÇÃO: Supabase não configurado - Login não funcionará!")
+print("🚀 === CONTINUANDO INICIALIZAÇÃO ===\n")
+
 # Import blueprints das rotas
 
 
