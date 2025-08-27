@@ -22,17 +22,25 @@ class SupabaseAuth:
         self.supabase_url = os.getenv('SUPABASE_URL')
         self.supabase_anon_key = os.getenv('SUPABASE_ANON_KEY')
         
-        if not self.supabase_url or not self.supabase_anon_key:
-            raise ValueError("Variáveis SUPABASE_URL e SUPABASE_ANON_KEY são obrigatórias")
+        # Modo tolerante - não falhar se variáveis não estiverem disponíveis
+        self.is_available = bool(self.supabase_url and self.supabase_anon_key)
         
-        self.headers = {
-            'apikey': self.supabase_anon_key,
-            'Authorization': f'Bearer {self.supabase_anon_key}',
-            'Content-Type': 'application/json'
-        }
+        if self.is_available:
+            self.headers = {
+                'apikey': self.supabase_anon_key,
+                'Authorization': f'Bearer {self.supabase_anon_key}',
+                'Content-Type': 'application/json'
+            }
+            print("✅ Supabase Auth inicializado com sucesso")
+        else:
+            self.headers = {}
+            print("⚠️ Supabase Auth não disponível - variáveis de ambiente ausentes")
     
     def get_user_by_email(self, email: str) -> dict:
         """Busca usuário por email no Supabase"""
+        if not self.is_available:
+            return None
+            
         try:
             response = requests.get(
                 f"{self.supabase_url}/rest/v1/users?email=eq.{email}",
@@ -95,6 +103,9 @@ class SupabaseAuth:
     
     def save_signal_to_supabase(self, signal_data: dict) -> bool:
         """Salva sinal no Supabase"""
+        if not self.is_available:
+            return False
+            
         try:
             # Adaptar dados para a estrutura da tabela signals
             supabase_signal = {
@@ -128,13 +139,21 @@ class SupabaseAuth:
             current_app.logger.error(f"Erro ao salvar sinal no Supabase: {e}")
             return False
 
-# Instância global
-supabase_auth = SupabaseAuth()
+# Instância global - modo tolerante
+try:
+    supabase_auth = SupabaseAuth()
+except Exception as e:
+    print(f"⚠️ Erro ao inicializar Supabase Auth: {e}")
+    supabase_auth = None
 
 @auth_supabase_bp.route('/login', methods=['POST'])
 def login_supabase():
     """Endpoint para login usando Supabase"""
     try:
+        # Verificar se Supabase está disponível
+        if not supabase_auth or not supabase_auth.is_available:
+            return jsonify({'error': 'Serviço de autenticação temporariamente indisponível'}), 503
+        
         data = request.get_json()
         if not data:
             return jsonify({'error': 'Dados não fornecidos'}), 400
@@ -262,4 +281,6 @@ def verify_token():
 # Função para salvar sinais no Supabase
 def save_signal_to_supabase(signal_data: dict) -> bool:
     """Função global para salvar sinais no Supabase"""
-    return supabase_auth.save_signal_to_supabase(signal_data)
+    if supabase_auth and supabase_auth.is_available:
+        return supabase_auth.save_signal_to_supabase(signal_data)
+    return False
