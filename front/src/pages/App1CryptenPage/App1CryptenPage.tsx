@@ -8,9 +8,9 @@ import { Link } from 'react-router-dom';
 import styles from './App1CryptenPage.module.css';
 import logo3 from '/logo3.png';
 import '../Dashboard/DashboardMobile.css';
-// import usePWA from '../../hooks/usePWA';
-// import PWAInstallPrompt from '../../components/PWA/PWAInstallPrompt';
-// import PWASplashScreen from '../../components/PWA/PWASplashScreen';
+import usePWA from '../../hooks/usePWA';
+import PWAInstallPrompt from '../../components/PWA/PWAInstallPrompt';
+import PWASplashScreen from '../../components/PWA/PWASplashScreen';
 
 /**
  * Página principal do App 1Crypten com PWA nativo
@@ -20,21 +20,31 @@ import '../Dashboard/DashboardMobile.css';
  * Página principal do App 1Crypten
  */
 const App1CryptenPage: React.FC = () => {
-  // const { capabilities, showInstallPrompt, addToHomeScreen } = usePWA();
+  const { capabilities, showInstallPrompt, addToHomeScreen } = usePWA();
   const [isInstalling, setIsInstalling] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
 
   /**
-   * Função para instalar o app com feedback visual (temporariamente desabilitada)
+   * Função para instalar o app com feedback visual
    */
   const handleInstallApp = async () => {
     setIsInstalling(true);
     
     try {
-      // Funcionalidade PWA temporariamente desabilitada
-      alert('Funcionalidade PWA temporariamente desabilitada para debug');
+      if (capabilities.platform === 'ios') {
+        // Para iOS, mostrar instruções
+        addToHomeScreen();
+      } else {
+        // Para outras plataformas, tentar instalação automática
+        const installed = await showInstallPrompt();
+        if (!installed) {
+          // Se não conseguiu instalar automaticamente, mostrar prompt personalizado
+          setShowPrompt(true);
+        }
+      }
     } catch (error) {
       console.error('Erro ao instalar app:', error);
+      setShowPrompt(true);
     } finally {
       setIsInstalling(false);
     }
@@ -68,23 +78,35 @@ const App1CryptenPage: React.FC = () => {
           </div>
           
           {/* Status do App */}
-          <button 
-            className={styles.installButton}
-            onClick={handleInstallApp}
-            disabled={isInstalling}
-          >
-            {isInstalling ? (
-              <>
-                <span className={styles.loadingIcon}>⏳</span>
-                Instalando...
-              </>
-            ) : (
-              <>
-                <span className={styles.downloadIcon}>📱</span>
-                Instalar App (Debug)
-              </>
-            )}
-          </button>
+          {capabilities.isInstalled ? (
+            <div className={styles.installedBadge}>
+              ✅ App Instalado
+            </div>
+          ) : (
+            <button 
+              className={styles.installButton}
+              onClick={handleInstallApp}
+              disabled={isInstalling || !capabilities.canInstall}
+            >
+              {isInstalling ? (
+                <>
+                  <span className={styles.loadingIcon}>⏳</span>
+                  Instalando...
+                </>
+              ) : (
+                <>
+                  <span className={styles.downloadIcon}>📱</span>
+                  {capabilities.platform === 'ios' ? 'Ver Instruções' : 'Instalar App'}
+                </>
+              )}
+            </button>
+          )}
+          
+          {!capabilities.canInstall && !capabilities.isInstalled && (
+            <div className={styles.notSupportedBadge}>
+              ⚠️ Instalação não suportada neste navegador
+            </div>
+          )}
         </div>
       </section>
 
@@ -226,9 +248,14 @@ const App1CryptenPage: React.FC = () => {
           <button 
             className={styles.finalInstallButton}
             onClick={handleInstallApp}
-            disabled={isInstalling}
+            disabled={isInstalling || !capabilities.canInstall || capabilities.isInstalled}
           >
-            {isInstalling ? (
+            {capabilities.isInstalled ? (
+              <>
+                <span className={styles.downloadIcon}>✅</span>
+                App Já Instalado
+              </>
+            ) : isInstalling ? (
               <>
                 <span className={styles.loadingIcon}>⏳</span>
                 Instalando...
@@ -236,15 +263,15 @@ const App1CryptenPage: React.FC = () => {
             ) : (
               <>
                 <span className={styles.downloadIcon}>📱</span>
-                Instalar App Agora (Debug)
+                {capabilities.platform === 'ios' ? 'Ver Instruções de Instalação' : 'Instalar App Agora'}
               </>
             )}
           </button>
         </div>
       </section>
       
-      {/* Componentes PWA temporariamente desabilitados */}
-      {/* {showPrompt && (
+      {/* Componentes PWA */}
+      {showPrompt && (
         <PWAInstallPrompt 
           onInstall={() => {
             setShowPrompt(false);
@@ -253,7 +280,7 @@ const App1CryptenPage: React.FC = () => {
           onDismiss={() => setShowPrompt(false)}
           autoShow={false}
         />
-      )} */}
+      )}
     </div>
   );
 };
