@@ -7,7 +7,7 @@ from flask_cors import CORS # Importar CORS
 from config import server
 
 # Importar blueprints
-from api_routes.auth import auth_bp
+
 from api_routes.auth_supabase import auth_supabase_bp
 from api_routes.signals import signals_bp
 from api_routes.btc_signals import btc_signals_bp
@@ -80,7 +80,7 @@ def register_api_routes(app_instance, bot_instance):
         print(f"🔍 [DEBUG] bot_instance.db: {getattr(bot_instance, 'db', 'NOT_FOUND')}")
     
     # Registrar blueprints
-    app_instance.register_blueprint(auth_bp, url_prefix='/api/auth')
+
     app_instance.register_blueprint(auth_supabase_bp, url_prefix='/api/auth')  # Supabase auth sobrescreve rotas
     app_instance.register_blueprint(signals_bp, url_prefix='/api/signals')
     app_instance.register_blueprint(btc_signals_bp)  # Já tem url_prefix='/api/btc-signals' definido no blueprint

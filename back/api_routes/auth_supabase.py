@@ -165,37 +165,286 @@ def login_supabase():
         if not username or not password:
             return jsonify({'error': 'Username e senha são obrigatórios'}), 400
         
-        # Buscar usuário no Supabase (assumindo que username é email)
-        user = supabase_auth.get_user_by_email(username)
-        
-        if not user:
-            # Delay para prevenir ataques de timing
-            import time
-            time.sleep(0.1)
-            return jsonify({'error': 'Credenciais inválidas'}), 401
-        
-        # Verificar senha
-        stored_password = user.get('password', '')
-        password_valid = False
-        
-        if stored_password.startswith('$2b$'):
-            # Hash bcrypt
-            password_valid = bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8'))
+        # Tentar fazer login com Supabase Auth
+        try:
+            response = requests.post(
+                f"{supabase_auth.supabase_url}/auth/v1/token?grant_type=password",
+                headers=supabase_auth.headers,
+                json={
+                    "email": username,
+                    "password": password
+                }
+            )
+            response.raise_for_status() # Levanta HTTPError para status de erro (4xx ou 5xx)
+            
+            supabase_user_data = response.json()
+            access_token = supabase_user_data['access_token']
+            refresh_token = supabase_user_data['refresh_token']
+            user_id = supabase_user_data['user']['id']
+            user_email = supabase_user_data['user']['email']
+
+            # Opcional: Você pode buscar mais detalhes do perfil do usuário aqui se necessário
+            # Ex: user_profile = supabase_auth.get_user_profile_from_db(user_id)
+
+            # Criar sessão local (se ainda for necessário para o backend)
+            token = supabase_auth.create_auth_session(user_id)
+            
+            if not token:
+                return jsonify({'error': 'Erro ao criar sessão local'}), 500
+
+            return jsonify({
+                'success': True,
+                'message': 'Login realizado com sucesso via Supabase',
+                'token': token, # Token da sessão local
+                'access_token': access_token, # Token de acesso do Supabase
+                'refresh_token': refresh_token, # Refresh token do Supabase
+                'user': {
+                    'id': user_id,
+                    'email': user_email,
+                    # Adicione outros campos do usuário Supabase se necessário
+                }
+            }), 200
+
+        except requests.exceptions.HTTPError as http_err:
+            current_app.logger.error(f"HTTP error occurred during Supabase login: {http_err} - {http_err.response.text}")
+            if http_err.response.status_code == 400: # Bad Request, geralmente credenciais inválidas
+                return jsonify({'error': 'Credenciais inválidas'}), 401
+            return jsonify({'error': 'Erro na autenticação com Supabase'}), 500
+        except Exception as e:
+            current_app.logger.error(f"Erro inesperado durante Supabase login: {e}")
+            return jsonify({'error': 'Erro interno do servidor'}), 500
+    except Exception as e:
+        current_app.logger.error(f"Erro geral na função login_supabase: {e}")
+        return jsonify({'error': 'Erro interno do servidor'}), 500
+
+@auth_supabase_bp.route('/logout', methods=['POST'])
+def logout_supabase():
+    """Endpoint para logout de usuários do Supabase"""
+    try:
+        # Verificar se Supabase está disponível
+        if not supabase_auth or not supabase_auth.is_available:
+            return jsonify({'error': 'Serviço de autenticação temporariamente indisponível'}), 503
+
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return jsonify({'error': 'Token não fornecido'}), 401
+
+        local_token = auth_header.split(' ')[1]
+
+        # Remover token da sessão local
+        if hasattr(current_app, 'auth_sessions') and local_token in current_app.auth_sessions:
+            del current_app.auth_sessions[local_token]
+
+        # Opcional: Invalidar sessão no Supabase (se houver um endpoint para isso)
+        # Supabase geralmente invalida tokens após um tempo ou se o refresh token for usado
+        # Para logout explícito, o cliente deve descartar os tokens do Supabase.
+
+        return jsonify({
+            'success': True,
+            'message': 'Logout realizado com sucesso'
+        }), 200
+
+    except Exception as e:
+        current_app.logger.error(f"Erro no logout do Supabase: {str(e)}")
+        return jsonify({'error': 'Erro interno do servidor'}), 500
+
+@auth_supabase_bp.route('/register', methods=['POST'])
+def register_supabase():
+    """Endpoint para registro de usuários via Supabase Auth"""
+    try:
+        # Verificar se Supabase está disponível
+        if not supabase_auth or not supabase_auth.is_available:
+            return jsonify({'error': 'Serviço de registro temporariamente indisponível'}), 503
+
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'Dados não fornecidos'}), 400
+
+        email = data.get('email')
+        password = data.get('password')
+
+        if not all([email, password]):
+            return jsonify({'error': 'Email e senha são obrigatórios'}), 400
+
+        # Chamar a API de registro do Supabase
+        response = requests.post(
+            f"{supabase_auth.supabase_url}/auth/v1/signup",
+            headers=supabase_auth.headers,
+            json={
+                "email": email,
+                "password": password
+            }
+        )
+        response.raise_for_status() # Levanta HTTPError para status de erro (4xx ou 5xx)
+
+        # Supabase retorna o usuário e tokens após o registro bem-sucedido
+        # Dependendo da configuração do Supabase, pode ser necessário verificar o email
+        return jsonify({
+            'success': True,
+            'message': 'Registro realizado com sucesso! Verifique seu email para confirmar sua conta.'
+        }), 201
+
+    except requests.exceptions.HTTPError as http_err:
+        current_app.logger.error(f"HTTP error occurred during Supabase registration: {http_err} - {http_err.response.text}")
+        if http_err.response.status_code == 422: # Unprocessable Entity, geralmente email já existe ou senha fraca
+            return jsonify({'error': 'Email já cadastrado ou senha inválida'}), 409
+        return jsonify({'error': 'Erro no registro com Supabase'}), 500
+    except Exception as e:
+        current_app.logger.error(f"Erro inesperado durante Supabase registration: {e}")
+        return jsonify({'error': 'Erro interno do servidor'}), 500
+
+@auth_supabase_bp.route('/verify', methods=['POST'])
+def verify_supabase():
+    """Endpoint para verificar token de autenticação do Supabase"""
+    try:
+        # Verificar se Supabase está disponível
+        if not supabase_auth or not supabase_auth.is_available:
+            return jsonify({'error': 'Serviço de verificação temporariamente indisponível'}), 503
+
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return jsonify({'error': 'Token não fornecido'}), 401
+
+        # O token aqui deve ser o access_token do Supabase, não o local_token
+        supabase_access_token = auth_header.split(' ')[1]
+
+        # Supabase não tem um endpoint direto para 'verificar' um token de acesso
+        # A verificação é feita implicitamente ao usar o token em requisições protegidas
+        # No entanto, podemos tentar obter o usuário a partir do token para validar
+        # Isso geralmente é feito no lado do cliente ou em um middleware
+
+        # Para simular uma verificação, podemos tentar obter o usuário logado
+        # Isso requer o token de acesso do Supabase
+        response = requests.get(
+            f"{supabase_auth.supabase_url}/auth/v1/user",
+            headers={
+                'apikey': supabase_auth.supabase_anon_key,
+                'Authorization': f'Bearer {supabase_access_token}',
+                'Content-Type': 'application/json'
+            }
+        )
+        response.raise_for_status() # Levanta HTTPError para status de erro (4xx ou 5xx)
+
+        user_data = response.json()
+
+        return jsonify({
+            'success': True,
+            'message': 'Token válido',
+            'user': user_data
+        }), 200
+
+    except requests.exceptions.HTTPError as http_err:
+        current_app.logger.error(f"HTTP error occurred during Supabase token verification: {http_err} - {http_err.response.text}")
+        if http_err.response.status_code == 401: # Unauthorized
+            return jsonify({'error': 'Token inválido ou expirado'}), 401
+        return jsonify({'error': 'Erro na verificação do token com Supabase'}), 500
+    except Exception as e:
+        current_app.logger.error(f"Erro inesperado durante Supabase token verification: {e}")
+        return jsonify({'error': 'Erro interno do servidor'}), 500
+
+@auth_supabase_bp.route('/refresh-token', methods=['POST'])
+def refresh_token_supabase():
+    """Endpoint para refrescar token de autenticação do Supabase"""
+    try:
+        # Verificar se Supabase está disponível
+        if not supabase_auth or not supabase_auth.is_available:
+            return jsonify({'error': 'Serviço de refresh de token temporariamente indisponível'}), 503
+
+        data = request.get_json()
+        if not data or not data.get('refresh_token'):
+            return jsonify({'error': 'Refresh token não fornecido'}), 400
+
+        refresh_token = data.get('refresh_token')
+
+        response = requests.post(
+            f"{supabase_auth.supabase_url}/auth/v1/token?grant_type=refresh_token",
+            headers=supabase_auth.headers,
+            json={
+                "refresh_token": refresh_token
+            }
+        )
+        response.raise_for_status() # Levanta HTTPError para status de erro (4xx ou 5xx)
+
+        supabase_token_data = response.json()
+
+        return jsonify({
+            'success': True,
+            'message': 'Token refrescado com sucesso',
+            'access_token': supabase_token_data['access_token'],
+            'refresh_token': supabase_token_data['refresh_token'],
+            'expires_in': supabase_token_data['expires_in']
+        }), 200
+
+    except requests.exceptions.HTTPError as http_err:
+        current_app.logger.error(f"HTTP error occurred during Supabase token refresh: {http_err} - {http_err.response.text}")
+        if http_err.response.status_code == 400: # Bad Request, geralmente refresh token inválido
+            return jsonify({'error': 'Refresh token inválido ou expirado'}), 401
+        return jsonify({'error': 'Erro ao refrescar token com Supabase'}), 500
+    except Exception as e:
+        current_app.logger.error(f"Erro inesperado durante Supabase token refresh: {e}")
+        return jsonify({'error': 'Erro interno do servidor'}), 500
+
+# Adicionar rota para salvar sinal no Supabase (exemplo de uso da classe SupabaseAuth)
+@auth_supabase_bp.route('/save-signal', methods=['POST'])
+def save_signal_route():
+    """Endpoint para salvar um sinal no Supabase"""
+    try:
+        if not supabase_auth or not supabase_auth.is_available:
+            return jsonify({'error': 'Serviço Supabase indisponível'}), 503
+
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'Dados não fornecidos'}), 400
+
+        if supabase_auth.save_signal_to_supabase(data):
+            return jsonify({'success': True, 'message': 'Sinal salvo com sucesso no Supabase'}), 200
         else:
-            # Texto plano (compatibilidade)
-            password_valid = (password == stored_password)
-        
-        if not password_valid:
-            import time
-            time.sleep(0.1)
-            return jsonify({'error': 'Credenciais inválidas'}), 401
-        
-        # Verificar se é admin
-        if not user.get('is_admin', False):
-            return jsonify({'error': 'Acesso negado. Apenas administradores podem acessar.'}), 403
-        
-        # Criar sessão
-        token = supabase_auth.create_auth_session(user['id'])
+            return jsonify({'error': 'Falha ao salvar sinal no Supabase'}), 500
+
+    except Exception as e:
+        current_app.logger.error(f"Erro na rota save-signal: {str(e)}")
+        return jsonify({'error': 'Erro interno do servidor'}), 500
+
+# Adicionar rota para obter usuário logado (exemplo de uso da classe SupabaseAuth)
+@auth_supabase_bp.route('/user', methods=['GET'])
+def get_logged_in_user():
+    """Endpoint para obter informações do usuário logado via Supabase"""
+    try:
+        if not supabase_auth or not supabase_auth.is_available:
+            return jsonify({'error': 'Serviço Supabase indisponível'}), 503
+
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return jsonify({'error': 'Token não fornecido'}), 401
+
+        supabase_access_token = auth_header.split(' ')[1]
+
+        response = requests.get(
+            f"{supabase_auth.supabase_url}/auth/v1/user",
+            headers={
+                'apikey': supabase_auth.supabase_anon_key,
+                'Authorization': f'Bearer {supabase_access_token}',
+                'Content-Type': 'application/json'
+            }
+        )
+        response.raise_for_status() # Levanta HTTPError para status de erro (4xx ou 5xx)
+
+        user_data = response.json()
+
+        return jsonify({
+            'success': True,
+            'user': user_data
+        }), 200
+
+    except requests.exceptions.HTTPError as http_err:
+        current_app.logger.error(f"HTTP error occurred getting logged in user: {http_err} - {http_err.response.text}")
+        if http_err.response.status_code == 401: # Unauthorized
+            return jsonify({'error': 'Token inválido ou expirado'}), 401
+        return jsonify({'error': 'Erro ao obter usuário logado do Supabase'}), 500
+    except Exception as e:
+        current_app.logger.error(f"Erro inesperado ao obter usuário logado: {e}")
+        return jsonify({'error': 'Erro interno do servidor'}), 500
+
         
         if not token:
             return jsonify({'error': 'Erro ao criar sessão'}), 500

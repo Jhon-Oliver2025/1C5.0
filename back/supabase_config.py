@@ -44,6 +44,7 @@ class SupabaseConfig:
         
         print("✅ Configuração do Supabase validada com sucesso")
         print(f"✅ Supabase URL: {self.SUPABASE_URL}")
+        print(f"✅ Supabase Anon Key: {self.SUPABASE_ANON_KEY}")
         print(f"✅ Database URL configurada")
         return True
     
