@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import styles from './App1CryptenPage.module.css';
 import logo3 from '/logo3.png';
 import '../Dashboard/DashboardMobile.css';
-import { usePWA } from '../../hooks/usePWA';
+import usePWA from '../../hooks/usePWA';
 import PWAInstallPrompt from '../../components/PWA/PWAInstallPrompt';
 import PWASplashScreen from '../../components/PWA/PWASplashScreen';
 

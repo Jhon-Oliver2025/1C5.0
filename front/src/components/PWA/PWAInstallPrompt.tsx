@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { usePWA } from '../../hooks/usePWA';
+import usePWA from '../../hooks/usePWA';
 import './PWAInstallPrompt.css';
 
 interface PWAInstallPromptProps {
