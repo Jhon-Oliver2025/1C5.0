@@ -34,20 +34,38 @@ import TradingSimulationPage from './pages/TradingSimulationPage/TradingSimulati
 import MainLayout from './components/MainLayout/MainLayout';
 import UpdateNotification from './components/UpdateNotification/UpdateNotification';
 import { useAuth } from './context/AuthContext';
+import NavigationFix from './utils/navigationFix';
 
 /**
  * Componente para verificar autenticação usando o novo AuthContext
  * Redireciona para login se não autenticado
  */
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuth } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
 
-  if (isAuth === null) {
-    // Aguardando a verificação inicial de autenticação
-    return <div>Carregando...</div>; // Ou um componente de spinner/loading
+  // Mostrar loading enquanto verifica autenticação
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        fontSize: '18px'
+      }}>
+        ⏳ Verificando autenticação...
+      </div>
+    );
   }
 
-  return isAuth ? <>{children}</> : <Navigate to="/login" replace />;
+  // Se não autenticado, redirecionar para login
+  if (!isAuthenticated) {
+    console.log('🔒 ProtectedRoute: Redirecionando para login');
+    return <Navigate to="/login" replace />;
+  }
+
+  // Se autenticado, mostrar conteúdo
+  return <>{children}</>;
 }
 
 /**

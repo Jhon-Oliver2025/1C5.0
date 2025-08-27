@@ -1,39 +1,60 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './LoginPage.module.css';
 import logo from '../assets/logo.png';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import NavigationFix from '../utils/navigationFix';
 
 function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, loading } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hasNavigated = useRef(false);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      console.log('🔄 Login: Usuário já autenticado, redirecionando...');
-      navigate('/dashboard', { replace: true });
+    // Aguardar o carregamento inicial terminar
+    if (loading) {
+      console.log('⏳ Login: Aguardando carregamento da autenticação...');
+      return;
     }
-  }, [isAuthenticated, navigate]);
+
+    // Evitar múltiplas navegações
+    if (isAuthenticated && !hasNavigated.current && !NavigationFix.isNavigating()) {
+      console.log('🔄 Login: Usuário já autenticado, redirecionando...');
+      hasNavigated.current = true;
+      
+      NavigationFix.debounceNavigation(() => {
+        NavigationFix.safeNavigate(navigate, '/dashboard', { replace: true });
+      }, 300);
+    }
+  }, [isAuthenticated, loading, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
+    hasNavigated.current = false;
 
-    const result = await login(email, password);
-    if (result.success) {
-      console.log('🎯 Login: Redirecionando para dashboard...');
-      navigate('/dashboard', { replace: true });
-    } else {
-      console.error('❌ Login: Falha -', result.error);
-      setError(result.error || 'Email ou senha incorretos. Por favor, tente novamente.');
+    try {
+      const result = await login(email, password);
+      if (result.success) {
+        console.log('🎯 Login: Login bem-sucedido, aguardando redirecionamento automático...');
+        // Não navegar aqui - deixar o useEffect handle
+        // O AuthContext já atualizou isAuthenticated
+      } else {
+        console.error('❌ Login: Falha -', result.error);
+        setError(result.error || 'Email ou senha incorretos. Por favor, tente novamente.');
+      }
+    } catch (error) {
+      console.error('❌ Login: Erro inesperado:', error);
+      setError('Erro inesperado. Tente novamente.');
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handleInputChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
