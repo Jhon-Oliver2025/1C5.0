@@ -148,82 +148,7 @@ export const usePWA = (): PWAHook => {
     };
   }, []);
 
-  // Mostrar prompt de instalação
-  const showInstallPrompt = useCallback(async (): Promise<boolean> => {
-    if (installPrompt) {
-      try {
-        await installPrompt.prompt();
-        const choiceResult = await installPrompt.userChoice;
-        
-        if (choiceResult.outcome === 'accepted') {
-          setInstallPrompt(null);
-          return true;
-        }
-        
-        return false;
-      } catch (error) {
-        console.error('Erro ao mostrar prompt de instalação:', error);
-        // Fallback para instruções manuais
-        addToHomeScreen();
-        return false;
-      }
-    } else {
-      // Se não há prompt nativo, mostrar instruções
-      addToHomeScreen();
-      return false;
-    }
-  }, [installPrompt, addToHomeScreen]);
-
-  // Solicitar permissão para notificações
-  const requestNotificationPermission = useCallback(async (): Promise<NotificationPermission> => {
-    if (!('Notification' in window)) {
-      return 'denied';
-    }
-
-    if (Notification.permission === 'granted') {
-      return 'granted';
-    }
-
-    if (Notification.permission === 'denied') {
-      return 'denied';
-    }
-
-    try {
-      const permission = await Notification.requestPermission();
-      return permission;
-    } catch (error) {
-      console.error('Erro ao solicitar permissão de notificação:', error);
-      return 'denied';
-    }
-  }, []);
-
-  // Mostrar notificação
-  const showNotification = useCallback(async (title: string, options?: NotificationOptions): Promise<void> => {
-    if (!('Notification' in window)) {
-      throw new Error('Notificações não são suportadas');
-    }
-
-    if (Notification.permission !== 'granted') {
-      const permission = await requestNotificationPermission();
-      if (permission !== 'granted') {
-        throw new Error('Permissão de notificação negada');
-      }
-    }
-
-    const defaultOptions: NotificationOptions = {
-      icon: '/logo3.png',
-      badge: '/icons/icon-96x96.png',
-      tag: '1crypten-notification',
-      renotify: true,
-      requireInteraction: false,
-      silent: false,
-      ...options
-    };
-
-    new Notification(title, defaultOptions);
-  }, [requestNotificationPermission]);
-
-  // Adicionar à tela inicial (iOS)
+  // Adicionar à tela inicial (iOS) - movido para antes de showInstallPrompt
   const addToHomeScreen = useCallback((): void => {
     const userAgent = navigator.userAgent.toLowerCase();
     const isIOS = /iphone|ipad|ipod/.test(userAgent);
@@ -302,13 +227,89 @@ export const usePWA = (): PWAHook => {
     });
   }, []);
 
+  // Mostrar prompt de instalação
+  const showInstallPrompt = useCallback(async (): Promise<boolean> => {
+    if (installPrompt) {
+      try {
+        await installPrompt.prompt();
+        const choiceResult = await installPrompt.userChoice;
+        
+        if (choiceResult.outcome === 'accepted') {
+          setInstallPrompt(null);
+          return true;
+        }
+        
+        return false;
+      } catch (error) {
+        console.error('Erro ao mostrar prompt de instalação:', error);
+        // Fallback para instruções manuais
+        addToHomeScreen();
+        return false;
+      }
+    } else {
+      // Se não há prompt nativo, mostrar instruções
+      addToHomeScreen();
+      return false;
+    }
+  }, [installPrompt, addToHomeScreen]);
+
+  // Solicitar permissão para notificações
+  const requestNotificationPermission = useCallback(async (): Promise<NotificationPermission> => {
+    if (!('Notification' in window)) {
+      return 'denied';
+    }
+
+    if (Notification.permission === 'granted') {
+      return 'granted';
+    }
+
+    if (Notification.permission === 'denied') {
+      return 'denied';
+    }
+
+    try {
+      const permission = await Notification.requestPermission();
+      return permission;
+    } catch (error) {
+      console.error('Erro ao solicitar permissão de notificação:', error);
+      return 'denied';
+    }
+  }, []);
+
+  // Mostrar notificação
+  const showNotification = useCallback(async (title: string, options?: NotificationOptions): Promise<void> => {
+    if (!('Notification' in window)) {
+      throw new Error('Notificações não são suportadas');
+    }
+
+    if (Notification.permission !== 'granted') {
+      const permission = await requestNotificationPermission();
+      if (permission !== 'granted') {
+        throw new Error('Permissão de notificação negada');
+      }
+    }
+
+    const defaultOptions: NotificationOptions = {
+      icon: '/logo3.png',
+      badge: '/icons/icon-96x96.png',
+      tag: '1crypten-notification',
+      requireInteraction: false,
+      silent: false,
+      ...options
+    };
+
+    new Notification(title, defaultOptions);
+  }, [requestNotificationPermission]);
+
+  // Função addToHomeScreen removida (duplicada)
+
   // Compartilhar conteúdo
   const shareContent = useCallback(async (data: ShareData): Promise<boolean> => {
     if (!('share' in navigator)) {
       // Fallback para clipboard
       if ('clipboard' in navigator && data.url) {
         try {
-          await navigator.clipboard.writeText(data.url);
+          await (navigator as any).clipboard.writeText(data.url);
           return true;
         } catch (error) {
           console.error('Erro ao copiar para clipboard:', error);
