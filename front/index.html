@@ -103,10 +103,26 @@
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', async () => {
           try {
+            // Forçar limpeza de caches antigos antes de registrar
+            console.log('🔄 Limpando caches PWA antigos...');
+            const cacheNames = await caches.keys();
+            await Promise.all(
+              cacheNames
+                .filter(name => name.includes('1crypten') && (name.includes('v3.0') || name.includes('v3.1')))
+                .map(name => {
+                  console.log(`🗑️ Removendo cache antigo: ${name}`);
+                  return caches.delete(name);
+                })
+            );
+            
             const registration = await navigator.serviceWorker.register('/sw.js', {
-              scope: '/'
+              scope: '/',
+              updateViaCache: 'none' // Forçar atualização
             });
-            console.log('✅ Service Worker registrado:', registration.scope);
+            console.log('✅ Service Worker registrado v3.2:', registration.scope);
+            
+            // Forçar atualização imediata se houver nova versão
+            await registration.update();
             
             // Verificar atualizações
             registration.addEventListener('updatefound', () => {

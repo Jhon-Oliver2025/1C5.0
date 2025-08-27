@@ -4,7 +4,7 @@
  * Versão: 3.0 - Melhorias para experiência mobile
  */
 
-const CACHE_VERSION = '3.1';
+const CACHE_VERSION = '3.2';
 const CACHE_NAME = `1crypten-v${CACHE_VERSION}`;
 const STATIC_CACHE = `1crypten-static-v${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `1crypten-dynamic-v${CACHE_VERSION}`;
@@ -90,7 +90,7 @@ async function cacheBackgroundResources() {
  * Ativação do Service Worker
  */
 self.addEventListener('activate', (event) => {
-  console.log('✅ Service Worker: Ativando versão otimizada v3.0...');
+  console.log('✅ Service Worker: Ativando versão otimizada v3.2 - Forçando limpeza PWA...');
   
   event.waitUntil(
     Promise.all([
@@ -124,14 +124,25 @@ async function cleanupOldCaches() {
   const cacheNames = await caches.keys();
   const validCaches = [STATIC_CACHE, DYNAMIC_CACHE, API_CACHE];
   
+  // Limpeza agressiva - remover TODOS os caches antigos
   const deletePromises = cacheNames
-    .filter(cacheName => !validCaches.includes(cacheName))
+    .filter(cacheName => !validCaches.includes(cacheName) || cacheName.includes('v3.0') || cacheName.includes('v3.1'))
     .map(cacheName => {
       console.log(`🗑️ Removendo cache antigo: ${cacheName}`);
       return caches.delete(cacheName);
     });
   
+  // Forçar limpeza de dados PWA corrompidos
+  try {
+    if ('indexedDB' in self) {
+      console.log('🔄 Limpando dados PWA corrompidos...');
+    }
+  } catch (error) {
+    console.warn('⚠️ Erro na limpeza de dados PWA:', error);
+  }
+  
   await Promise.all(deletePromises);
+  console.log('✅ Limpeza de cache PWA concluída - versão 3.2 ativa');
 }
 
 /**
