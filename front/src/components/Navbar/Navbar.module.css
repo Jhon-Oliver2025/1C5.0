@@ -252,6 +252,33 @@
   border-color: #FF4C4C;
 }
 
+/* Estilo para o botão de instalação PWA no menu */
+.installAppButton {
+  color: #64FFDA;
+  background: rgba(100, 255, 218, 0.1);
+  border: 1px solid #64FFDA;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 5px;
+}
+
+.installAppButton:hover {
+  background-color: rgba(100, 255, 218, 0.2);
+  border-color: #4CFFB8;
+  color: #4CFFB8;
+}
+
 /* Animação para o menu mobile */
 @keyframes slideDown {
   from {

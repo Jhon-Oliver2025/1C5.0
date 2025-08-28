@@ -203,11 +203,7 @@ function AppRoutes() {
       } />
       
       <Route path="/app" element={
-        <ProtectedRoute>
-          <MainLayout>
-            <App1CryptenPage />
-          </MainLayout>
-        </ProtectedRoute>
+        <Navigate to="/dashboard" replace />
       } />
       
       <Route path="/crm" element={

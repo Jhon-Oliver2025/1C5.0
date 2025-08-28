@@ -133,12 +133,50 @@ export const usePWA = (): PWAHook => {
       e.preventDefault();
       setInstallPrompt(e as any);
       setCapabilities(prev => ({ ...prev, isInstallable: true }));
+      
+      // Mostrar barra automática conforme documentação
+      setTimeout(() => {
+        const banner = document.createElement('div');
+        banner.id = 'pwa-install-banner';
+        banner.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          background: #64FFDA;
+          color: #000;
+          padding: 12px 16px;
+          text-align: center;
+          font-weight: 600;
+          z-index: 10000;
+          cursor: pointer;
+          transition: transform 0.3s ease;
+        `;
+        banner.innerHTML = '📥 Adicionar à tela inicial - Toque aqui';
+        banner.onclick = () => {
+          showInstallPrompt();
+          banner.remove();
+        };
+        document.body.appendChild(banner);
+        
+        // Remover banner após 10 segundos
+        setTimeout(() => {
+          if (banner.parentNode) banner.remove();
+        }, 10000);
+      }, 2000);
+    };
+
+    // Listener para evento do menu
+    const handleMenuInstallRequest = () => {
+      showInstallPrompt();
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('pwa-install-request', handleMenuInstallRequest);
     
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('pwa-install-request', handleMenuInstallRequest);
     };
   }, []);
 
