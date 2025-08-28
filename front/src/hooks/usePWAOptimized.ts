@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Workbox } from 'workbox-window';
 
 interface PWAInstallPrompt {
   prompt: () => Promise<void>;
@@ -159,28 +158,55 @@ export const usePWAOptimized = (): PWAHookOptimized => {
     }
   }, []);
 
-  // Inicializar Workbox
+  // Inicializar PWA com VitePWA
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      const wb = new Workbox('/sw.js');
-      
-      wb.addEventListener('installed', (event) => {
-        console.log('✅ Workbox Service Worker instalado');
-        setWorkboxReady(true);
-      });
-      
-      wb.addEventListener('waiting', (event) => {
-        console.log('🔄 Nova versão do Service Worker disponível');
-        // Mostrar notificação de atualização
-      });
-      
-      wb.addEventListener('controlling', (event) => {
-        console.log('🎯 Service Worker assumiu controle');
-        window.location.reload();
-      });
-      
-      wb.register();
-    }
+    const initializePWA = async () => {
+      if ('serviceWorker' in navigator) {
+        try {
+          // Usar o registerSW gerado pelo VitePWA
+          const { registerSW } = await import('virtual:pwa-register');
+          
+          const updateSW = registerSW({
+            onNeedRefresh() {
+              console.log('🔄 Nova versão disponível');
+            },
+            onOfflineReady() {
+              console.log('✅ App pronto para funcionar offline');
+              setWorkboxReady(true);
+            },
+            onRegistered(registration) {
+              console.log('✅ Service Worker registrado pelo VitePWA');
+              setWorkboxReady(true);
+            },
+            onRegisterError(error) {
+              console.error('❌ Erro ao registrar Service Worker:', error);
+              setWorkboxReady(false);
+            }
+          });
+          
+        } catch (error) {
+          console.error('❌ Erro ao importar registerSW:', error);
+          // Fallback para detecção simples
+          setTimeout(async () => {
+            try {
+              const registration = await navigator.serviceWorker.getRegistration();
+              if (registration) {
+                console.log('✅ Service Worker detectado (fallback)');
+                setWorkboxReady(true);
+              }
+            } catch (e) {
+              console.error('❌ Fallback falhou:', e);
+              setWorkboxReady(false);
+            }
+          }, 3000);
+        }
+      } else {
+        console.log('❌ Service Worker não suportado');
+        setWorkboxReady(false);
+      }
+    };
+    
+    initializePWA();
   }, []);
 
   // Inicializar capacidades com verificações rigorosas
