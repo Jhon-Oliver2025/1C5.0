@@ -43,7 +43,130 @@
   margin: 0;
 }
 
-/* Hero Section */
+/* Banner discreto */
+.discreteBanner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  background: rgba(100, 255, 218, 0.05);
+  border-bottom: 1px solid rgba(100, 255, 218, 0.1);
+  font-size: 14px;
+  color: #64FFDA;
+}
+
+.bannerIcon {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.bannerText {
+  font-weight: 500;
+}
+
+/* Hero Section Centralizado */
+.heroCentered {
+  padding: 40px 20px;
+  background: rgba(100, 255, 218, 0.02);
+  text-align: center;
+}
+
+.heroContentCentered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.appIconLarge {
+  width: 120px;
+  height: 120px;
+  border-radius: 24px;
+  box-shadow: 0 8px 24px rgba(100, 255, 218, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.appIconLarge:hover {
+  transform: scale(1.05);
+}
+
+.versionText {
+  font-size: 16px;
+  color: #64FFDA;
+  margin: 0;
+  opacity: 0.8;
+  font-weight: 500;
+}
+
+.installButtonCentered {
+  background: linear-gradient(135deg, #64FFDA 0%, #4ECDC4 100%);
+  color: #000000;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(100, 255, 218, 0.3);
+}
+
+.installButtonCentered:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(100, 255, 218, 0.4);
+}
+
+.installButtonCentered:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Hero Section Compacto (mantido para compatibilidade) */
+.heroCompact {
+  padding: 20px;
+  background: rgba(100, 255, 218, 0.02);
+}
+
+.heroContent {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.appIconSmall {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(100, 255, 218, 0.2);
+}
+
+.appInfo {
+  flex: 1;
+}
+
+.heroTitleCompact {
+  font-size: 20px;
+  font-weight: 700;
+  color: #E6F1FF;
+  margin: 0 0 4px 0;
+}
+
+.heroSubtitleCompact {
+  font-size: 14px;
+  color: #64FFDA;
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* Hero Section Original (mantido para compatibilidade) */
 .hero {
   padding: 40px 20px 60px;
   text-align: center;
@@ -184,6 +307,28 @@
 .cta {
   padding: 40px 20px;
   max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Features Section Compacta */
+.featuresCompact {
+  padding: 24px 20px;
+  background: rgba(16, 34, 64, 0.2);
+}
+
+.sectionTitleCompact {
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #E6F1FF;
+}
+
+.featureGridCompact {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  max-width: 800px;
   margin: 0 auto;
 }
 

@@ -3,7 +3,7 @@
  * Versão limpa sem duplicações
  */
 
-const CACHE_VERSION = '3.3';
+const CACHE_VERSION = '3.4';
 const CACHE_NAME = `1crypten-v${CACHE_VERSION}`;
 const STATIC_CACHE = `1crypten-static-v${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `1crypten-dynamic-v${CACHE_VERSION}`;

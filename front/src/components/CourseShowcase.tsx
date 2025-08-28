@@ -111,6 +111,7 @@ const ProgressBarFill = styled.div<{ $progress: number }>`
 
 const SectionTitle = styled.h2`
   font-size: 2em;
+  margin-top: 24px;
   margin-bottom: 20px;
   color: #e5e5e5;
 `;

@@ -1,55 +1,80 @@
 # 1Crypten - Sistema de Sinais de Criptomoedas
 
-Sistema completo de análise técnica e sinais de trading para criptomoedas, desenvolvido com React (frontend) e Flask (backend).
+Sistema completo de análise técnica e sinais de trading para criptomoedas, desenvolvido com React (frontend) e Flask (backend). Inclui PWA (Progressive Web App) para experiência mobile nativa.
 
-## 🐳 Desenvolvimento via Docker (ÚNICO MODELO SUPORTADO)
+## 🚀 Funcionalidades Principais
 
-Este projeto foi otimizado para funcionar **EXCLUSIVAMENTE via Docker**. Todos os arquivos de desenvolvimento local foram removidos para manter o foco no modelo Docker.
+### 📱 PWA (Progressive Web App)
+- **Instalação nativa**: Funciona como app no celular
+- **Offline**: Cache inteligente para uso sem internet
+- **Notificações**: Sistema de notificações push
+- **Responsivo**: Design otimizado para todos os dispositivos
+- **Service Worker**: Atualizações automáticas e cache eficiente
+
+### 📊 Dashboard e Análises
+- **Sinais de Trading**: Análise técnica automatizada
+- **BTC Analysis**: Monitoramento avançado do Bitcoin
+- **Simulação de Trading**: Investimentos simulados
+- **CRM**: Gestão completa de usuários e vendas
+- **Área de Membros**: Cursos e conteúdo exclusivo
+
+### 🎨 Interface Moderna
+- **Design responsivo**: Mobile-first approach
+- **Containers motivacionais**: Mensagens inspiracionais
+- **Navegação intuitiva**: UX otimizada
+- **Notificações elegantes**: Toast notifications sutis
+
+## 🛠️ Desenvolvimento Local
 
 ### Pré-requisitos
-- Docker Desktop instalado e rodando
-- Arquivo `.env` configurado (copie de `.env.example`)
+- Node.js 18+ e npm
+- Python 3.9+ e pip
+- Supabase configurado
+- Arquivo `.env` configurado
 
 ### Como Executar
 
 ```bash
 # 1. Clone o repositório
 git clone <repo-url>
-cd 1C3.0
+cd 1C5.0
 
 # 2. Configure as variáveis de ambiente
 cp .env.example .env
 # Edite o arquivo .env com suas configurações
 
-# 3. Inicie o sistema completo
-docker-compose -f docker-compose.prod.yml up -d
+# 3. Inicie o backend
+cd back
+pip install -r requirements.txt
+python app_supabase.py
 
-# 4. Verifique o status
-docker ps
+# 4. Inicie o frontend (novo terminal)
+cd front
+npm install
+npm run dev
 ```
 
-### Acessos
-- **Frontend**: http://localhost/dashboard
-- **API**: http://localhost/api/status
-- **Nginx**: http://localhost
+### Acessos Locais
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5000
+- **PWA**: http://localhost:3000/app
 
-### Comandos Úteis
+## 🐳 Deploy com Docker
 
+### Produção (Coolify)
 ```bash
-# Parar o sistema
-docker-compose -f docker-compose.prod.yml down
+# Deploy automático via Coolify
+# Arquivo: docker-compose.coolify.yml
+```
 
-# Rebuild completo
-docker-compose -f docker-compose.prod.yml down
-docker-compose -f docker-compose.prod.yml up -d --build
+### Desenvolvimento
+```bash
+# Inicie com Docker
+docker-compose -f docker-compose.dev.yml up -d
 
 # Ver logs
 docker logs crypto-frontend
 docker logs crypto-backend
-docker logs crypto-nginx
-
-# Reiniciar um serviço específico
-docker-compose -f docker-compose.prod.yml restart frontend
 ```
 
 ## 🏗️ Arquitetura

@@ -21,7 +21,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0;
+  margin: 4px 8px; /* Margin horizontal para responsividade */
   text-align: center;
   transition: opacity 0.8s ease-in-out;
   overflow: hidden;
@@ -31,6 +31,8 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  max-width: calc(100vw - 16px); /* Garantir responsividade */
+  box-sizing: border-box; /* Incluir padding e border na largura */
   
   /* Borda com gradiente de 3 tons de azul */
   border: 2px solid;

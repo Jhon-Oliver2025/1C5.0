@@ -101,14 +101,9 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, onLogout, isBackendOnl
                   <NavLink to="/suporte" className={({ isActive }) => isActive ? styles.activeMobileNavLink : styles.mobileNavLink} onClick={toggleMobileMenu}>
                     Suporte
                   </NavLink>
-                  <button className={styles.installAppButton} onClick={() => {
-                    // Disparar evento de instalação PWA conforme documentação
-                    const installEvent = new CustomEvent('pwa-install-request');
-                    window.dispatchEvent(installEvent);
-                    toggleMobileMenu();
-                  }}>
+                  <NavLink to="/app" className={styles.installAppButton} onClick={toggleMobileMenu}>
                     📥 Instalar App
-                  </button>
+                  </NavLink>
                 </div>
                 
                 {/* Seção Admin - apenas para administradores */}

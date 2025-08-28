@@ -33,7 +33,7 @@ const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onUpdate }) => 
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                   // Nova versão disponível
-                  setNewVersion('1.3.0'); // Versão atual
+                  setNewVersion('1.5.0'); // Versão atual
                   setShowUpdate(true);
                 }
               });
@@ -109,27 +109,24 @@ const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onUpdate }) => 
     <div className={styles.overlay}>
       <div className={styles.notification}>
         <div className={styles.header}>
-          <div className={styles.icon}>🚀</div>
-          <h3 className={styles.title}>Nova Versão Disponível!</h3>
-        </div>
-        
-        <div className={styles.content}>
-          <p className={styles.message}>
-            A versão <strong>{newVersion}</strong> do 1Crypten está disponível.
-          </p>
-          <p className={styles.description}>
-            Esta atualização inclui melhorias de performance e novas funcionalidades.
-          </p>
+          <div className={styles.icon}>✨</div>
+          <div className={styles.content}>
+            <h4 className={styles.title}>Nova versão disponível</h4>
+            <p className={styles.message}>
+              v{newVersion} • Melhorias e correções
+            </p>
+          </div>
+          <button 
+            className={styles.closeButton}
+            onClick={handleDismiss}
+            disabled={isUpdating}
+            aria-label="Fechar notificação"
+          >
+            ×
+          </button>
         </div>
         
         <div className={styles.actions}>
-          <button 
-            className={styles.dismissButton}
-            onClick={handleDismiss}
-            disabled={isUpdating}
-          >
-            Mais Tarde
-          </button>
           <button 
             className={styles.updateButton}
             onClick={handleUpdate}
@@ -138,10 +135,10 @@ const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onUpdate }) => 
             {isUpdating ? (
               <>
                 <span className={styles.spinner}></span>
-                Atualizando...
+                Atualizando
               </>
             ) : (
-              'Atualizar Agora'
+              'Atualizar'
             )}
           </button>
         </div>

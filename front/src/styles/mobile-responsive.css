@@ -140,8 +140,10 @@
 /* Header motivacional - mobile */
 .mobile-motivational {
   height: 80px !important;
-  margin: 4px 0 !important;
+  margin: 4px 8px !important; /* Adicionado margin horizontal para evitar corte */
   padding: 0 12px !important;
+  max-width: calc(100vw - 16px) !important; /* Garantir que não ultrapasse a tela */
+  box-sizing: border-box !important;
 }
 
 .mobile-motivational-text {
@@ -382,6 +384,9 @@
   
   .mobile-motivational {
     height: 70px !important;
+    margin: 4px 8px !important; /* Margin horizontal para responsividade */
+    max-width: calc(100vw - 16px) !important; /* Garantir que não ultrapasse a tela */
+    box-sizing: border-box !important;
   }
   
   .mobile-motivational-text {

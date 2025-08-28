@@ -1282,6 +1282,7 @@ const AdminHeader = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 24px;
   margin-bottom: 30px;
   padding: 20px;
   background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
@@ -1293,7 +1294,12 @@ const AdminHeader = styled.header`
     flex-direction: column;
     gap: 15px;
     padding: 15px;
+    margin-top: 20px;
     margin-bottom: 20px;
+  }
+  
+  @media (max-width: 480px) {
+    margin-top: 16px;
   }
 `;
 
@@ -1347,15 +1353,18 @@ const ActionButtons = styled.div`
   gap: 1rem;
   margin-bottom: 2rem;
   justify-content: flex-start;
+  flex-wrap: wrap;
   
   @media (max-width: 768px) {
-    flex-direction: column;
     gap: 0.75rem;
     margin-bottom: 1.5rem;
+    justify-content: center;
   }
   
   @media (max-width: 480px) {
+    flex-direction: column;
     gap: 0.5rem;
+    width: 100%;
   }
 `;
 
@@ -1371,16 +1380,21 @@ const PreviewButton = styled.a`
   border-radius: 8px;
   font-weight: 600;
   transition: all 0.3s ease;
+  white-space: nowrap;
   
   @media (max-width: 768px) {
     padding: 0.6rem 1.2rem;
     font-size: 0.9rem;
     justify-content: center;
+    flex: 1;
+    min-width: 140px;
   }
   
   @media (max-width: 480px) {
     padding: 0.5rem 1rem;
     font-size: 0.8rem;
+    width: 100%;
+    flex: none;
   }
   
   &:hover {
@@ -1401,16 +1415,21 @@ const SaveButton = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  white-space: nowrap;
   
   @media (max-width: 768px) {
     padding: 0.6rem 1.2rem;
     font-size: 0.9rem;
     justify-content: center;
+    flex: 1;
+    min-width: 140px;
   }
   
   @media (max-width: 480px) {
     padding: 0.5rem 1rem;
     font-size: 0.8rem;
+    width: 100%;
+    flex: none;
   }
   
   &:hover {
@@ -1424,14 +1443,22 @@ const TabNavigation = styled.nav`
   background: rgba(255, 255, 255, 0.05);
   border-bottom: 1px solid #333;
   overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0 1rem;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
   
   @media (max-width: 768px) {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    
-    &::-webkit-scrollbar {
-      display: none;
-    }
+    padding: 0 0.5rem;
+    gap: 0.25rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0 0.25rem;
+    gap: 0.125rem;
   }
 `;
 
@@ -1449,16 +1476,25 @@ const TabButton = styled.button.withConfig({
   cursor: pointer;
   transition: all 0.3s ease;
   white-space: nowrap;
+  flex-shrink: 0;
+  min-width: fit-content;
   
   @media (max-width: 768px) {
-    padding: 0.8rem 1.2rem;
-    font-size: 0.9rem;
-    gap: 0.3rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    gap: 0.25rem;
+    min-width: auto;
   }
   
   @media (max-width: 480px) {
-    padding: 0.6rem 1rem;
-    font-size: 0.8rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    gap: 0.2rem;
+    
+    svg {
+      width: 14px;
+      height: 14px;
+    }
   }
   
   &:hover {

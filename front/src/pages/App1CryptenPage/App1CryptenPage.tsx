@@ -52,30 +52,18 @@ const App1CryptenPage: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      {/* CONTAINER MOTIVACIONAL NO TOPO DA DIV PRINCIPAL (4px) */}
-      <div className="mobile-motivation-header-container">
-        {/* Seção Motivacional */}
-        <div className="mobile-motivational">
-          <p className="mobile-motivational-text">
-            Tenha o poder dos sinais na palma da sua mão, onde quer que esteja.
-          </p>
-        </div>
-
-        {/* Espaçamento de Segurança (4px) */}
-        <div className="mobile-safety-gap"></div>
+      {/* Banner discreto */}
+      <div className={styles.discreteBanner}>
+        <span className={styles.bannerIcon}>📱</span>
+        <span className={styles.bannerText}>Instale o app para uma experiência otimizada</span>
       </div>
 
       {/* CONTEÚDO DA PÁGINA APP1CRYPTEN */}
-      {/* Hero Section */}
-      <section className={styles.hero}>
-        <div className={styles.heroContent}>
-          <img src={logo3} alt="1Crypten" className={styles.appIcon} />
-          <h2 className={styles.heroTitle}>1Crypten</h2>
-          <p className={styles.heroSubtitle}>Sinais de Trading em Tempo Real</p>
-          <div className={styles.versionInfo}>
-            <span className={styles.version}>v1.4.0</span>
-            <span className={styles.versionLabel}>Versão Atual</span>
-          </div>
+      {/* Hero Section Centralizado */}
+      <section className={styles.heroCentered}>
+        <div className={styles.heroContentCentered}>
+          <img src={logo3} alt="1Crypten" className={styles.appIconLarge} />
+          <p className={styles.versionText}>v1.5.0</p>
           
           {/* Status do App */}
           {capabilities.isInstalled ? (
@@ -84,7 +72,7 @@ const App1CryptenPage: React.FC = () => {
             </div>
           ) : (
             <button 
-              className={styles.installButton}
+              className={styles.installButtonCentered}
               onClick={handleInstallApp}
               disabled={isInstalling}
             >
@@ -104,11 +92,11 @@ const App1CryptenPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className={styles.features}>
-        <h3 className={styles.sectionTitle}>Por que usar o App 1Crypten?</h3>
+      {/* Features Section Compacta */}
+      <section className={styles.featuresCompact}>
+        <h3 className={styles.sectionTitleCompact}>Principais Benefícios</h3>
         
-        <div className={styles.featureGrid}>
+        <div className={styles.featureGridCompact}>
           <div className={styles.featureCard}>
             <div className={styles.featureIcon}>⚡</div>
             <h4 className={styles.featureTitle}>Ultra Rápido</h4>

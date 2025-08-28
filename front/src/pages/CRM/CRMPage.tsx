@@ -49,6 +49,7 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 24px;
   margin-bottom: 30px;
   padding: 20px;
   background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
@@ -76,40 +77,50 @@ const Title = styled.h1`
 
 const StatsContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
 `;
 
 const StatCard = styled.div`
   background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  padding: 20px;
-  border-radius: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
   border: 1px solid #3b82f6;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
   }
 `;
 
 const StatIcon = styled.div`
-  font-size: 2em;
+  font-size: 1.2em;
   color: #64FFDA;
-  margin-bottom: 10px;
+  flex-shrink: 0;
+`;
+
+const StatContent = styled.div`
+  flex: 1;
+  min-width: 0;
 `;
 
 const StatValue = styled.div`
-  font-size: 2em;
-  font-weight: bold;
+  font-size: 1.4em;
+  font-weight: 600;
   color: white;
-  margin-bottom: 5px;
+  margin-bottom: 2px;
+  line-height: 1.2;
 `;
 
 const StatLabel = styled.div`
   color: #94a3b8;
-  font-size: 0.9em;
+  font-size: 0.8em;
+  line-height: 1.2;
 `;
 
 const TabContainer = styled.div`
@@ -592,27 +603,35 @@ const CRMPage: React.FC = () => {
 
       {/* Estatísticas */}
       <StatsContainer>
-        <StatCard>
-          <StatIcon><FaUsers /></StatIcon>
-          <StatValue>{stats.totalUsers}</StatValue>
-          <StatLabel>Total de Usuários</StatLabel>
-        </StatCard>
-        <StatCard>
-          <StatIcon><FaShoppingCart /></StatIcon>
-          <StatValue>{stats.totalPurchases}</StatValue>
-          <StatLabel>Total de Compras</StatLabel>
-        </StatCard>
-        <StatCard>
-          <StatIcon><FaDollarSign /></StatIcon>
-          <StatValue>{formatCurrency(stats.totalRevenue)}</StatValue>
-          <StatLabel>Receita Total</StatLabel>
-        </StatCard>
-        <StatCard>
-          <StatIcon><FaPlus /></StatIcon>
-          <StatValue>{stats.activeAccess}</StatValue>
-          <StatLabel>Acessos Ativos</StatLabel>
-        </StatCard>
-      </StatsContainer>
+          <StatCard>
+            <StatIcon><FaUsers /></StatIcon>
+            <StatContent>
+              <StatValue>{stats.totalUsers}</StatValue>
+              <StatLabel>Total de Usuários</StatLabel>
+            </StatContent>
+          </StatCard>
+          <StatCard>
+            <StatIcon><FaShoppingCart /></StatIcon>
+            <StatContent>
+              <StatValue>{stats.totalPurchases}</StatValue>
+              <StatLabel>Total de Compras</StatLabel>
+            </StatContent>
+          </StatCard>
+          <StatCard>
+            <StatIcon><FaDollarSign /></StatIcon>
+            <StatContent>
+              <StatValue>{formatCurrency(stats.totalRevenue)}</StatValue>
+              <StatLabel>Receita Total</StatLabel>
+            </StatContent>
+          </StatCard>
+          <StatCard>
+            <StatIcon><FaPlus /></StatIcon>
+            <StatContent>
+              <StatValue>{stats.activeAccess}</StatValue>
+              <StatLabel>Acessos Ativos</StatLabel>
+            </StatContent>
+          </StatCard>
+        </StatsContainer>
 
       {/* Tabs */}
       <TabContainer>
