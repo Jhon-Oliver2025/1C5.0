@@ -62,6 +62,108 @@ def get_pending_signals():
             'message': f'Erro interno: {str(e)}'
         }), 500
 
+@btc_signals_bp.route('/download-and-reprocess', methods=['POST'])
+def download_and_reprocess_signals():
+    """Baixa sinais do Supabase gerados após 21:00 e reprocessa automaticamente"""
+    try:
+        print('📥 Iniciando download e reprocessamento de sinais do Supabase...')
+        
+        if not btc_signal_manager:
+            return jsonify({
+                'success': False,
+                'error': 'Sistema BTC não inicializado'
+            }), 500
+        
+        # Importar Supabase
+        import os
+        from supabase import create_client, Client
+        from datetime import datetime, time
+        
+        supabase_url = os.getenv('SUPABASE_URL')
+        supabase_key = os.getenv('SUPABASE_ANON_KEY')
+        
+        if not supabase_url or not supabase_key:
+            return jsonify({
+                'success': False,
+                'error': 'Supabase não configurado'
+            }), 500
+        
+        supabase: Client = create_client(supabase_url, supabase_key)
+        
+        # Calcular timestamp de 21:00 de hoje
+        sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
+        today = datetime.now(sao_paulo_tz).date()
+        cutoff_time = datetime.combine(today, time(21, 0)).replace(tzinfo=sao_paulo_tz)
+        cutoff_iso = cutoff_time.isoformat()
+        
+        print(f'🕘 Buscando sinais gerados após: {cutoff_time.strftime("%d/%m/%Y %H:%M:%S")}')
+        
+        # Buscar sinais do Supabase gerados após 21:00 de hoje
+        query = supabase.table('signals').select('*').gte('created_at', cutoff_iso).order('created_at', desc=True)
+        result = query.execute()
+        
+        if not result.data:
+            return jsonify({
+                'success': True,
+                'downloaded': 0,
+                'message': 'Nenhum sinal encontrado após 21:00 de hoje'
+            })
+        
+        downloaded_count = 0
+        reprocessed_count = 0
+        
+        # Processar cada sinal encontrado
+        for signal_data in result.data:
+            try:
+                # Converter sinal do Supabase para formato do sistema
+                formatted_signal = {
+                    'id': signal_data.get('id', ''),
+                    'symbol': signal_data.get('symbol', ''),
+                    'type': signal_data.get('type', ''),
+                    'entry_price': float(signal_data.get('entry_price', 0)),
+                    'target_price': float(signal_data.get('target_price', 0)),
+                    'projection_percentage': float(signal_data.get('projection_percentage', 0)),
+                    'quality_score': float(signal_data.get('quality_score', 0)),
+                    'signal_class': signal_data.get('signal_class', ''),
+                    'created_at': signal_data.get('created_at', ''),
+                    'entry_time': signal_data.get('entry_time', signal_data.get('created_at', '')),
+                    'status': 'PENDING_REANALYSIS',
+                    'reprocessed_at': datetime.now(sao_paulo_tz).isoformat(),
+                    'original_supabase_data': signal_data
+                }
+                
+                downloaded_count += 1
+                
+                # Adicionar sinal ao sistema para reprocessamento automático
+                success = btc_signal_manager.add_signal_for_reanalysis(formatted_signal)
+                
+                if success:
+                    reprocessed_count += 1
+                    print(f'✅ Sinal {signal_data.get("symbol")} adicionado para reprocessamento')
+                else:
+                    print(f'⚠️ Falha ao adicionar sinal {signal_data.get("symbol")} para reprocessamento')
+                    
+            except Exception as e:
+                print(f'❌ Erro ao processar sinal {signal_data.get("id", "unknown")}: {e}')
+                continue
+        
+        print(f'📊 Download concluído: {downloaded_count} sinais baixados, {reprocessed_count} enviados para reprocessamento')
+        
+        return jsonify({
+            'success': True,
+            'downloaded': downloaded_count,
+            'reprocessed': reprocessed_count,
+            'message': f'{downloaded_count} sinais baixados do Supabase e {reprocessed_count} enviados para reprocessamento automático'
+        })
+        
+    except Exception as e:
+        print(f'❌ Erro no download e reprocessamento: {e}')
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': f'Erro interno: {str(e)}'
+        }), 500
+
 @btc_signals_bp.route('/start-monitoring', methods=['POST'])
 @jwt_required
 def start_monitoring():

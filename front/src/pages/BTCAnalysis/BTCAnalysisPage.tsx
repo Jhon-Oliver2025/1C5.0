@@ -344,6 +344,71 @@ const RefreshButton = styled.button`
   }
 `;
 
+const DownloadSignalsButton = styled.button`
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  border: 1px solid #10b981;
+  position: relative;
+  overflow: hidden;
+  
+  @media (max-width: 768px) {
+    padding: 8px 12px;
+    font-size: 0.9em;
+    gap: 5px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 6px 10px;
+    font-size: 0.8em;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    
+    &::before {
+      left: 100%;
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border-color: #6b7280;
+    
+    &::before {
+      display: none;
+    }
+  }
+`;
+
 const AutoRefreshContainer = styled.div`
   display: flex;
   align-items: center;
@@ -840,6 +905,7 @@ const BTCAnalysisPage: React.FC = () => {
   const [isAutoRefreshEnabled, setIsAutoRefreshEnabled] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshCountdown, setRefreshCountdown] = useState(30);
+  const [isDownloadingSignals, setIsDownloadingSignals] = useState(false);
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -1272,6 +1338,43 @@ const BTCAnalysisPage: React.FC = () => {
     setIsAutoRefreshEnabled(!isAutoRefreshEnabled);
   };
   
+  // Função para baixar sinais do Supabase e reprocessar automaticamente
+  const handleDownloadSignals = async () => {
+    if (isDownloadingSignals) return;
+    
+    setIsDownloadingSignals(true);
+    
+    try {
+      console.log('📥 Iniciando download de sinais do Supabase...');
+      
+      // Chamar API para baixar e reprocessar sinais automaticamente
+      const response = await fetch('/api/btc-signals/download-and-reprocess', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        console.log('✅ Sinais baixados e reprocessados:', data);
+        alert(`✅ Sucesso! ${data.downloaded || 0} sinais baixados do Supabase e enviados para reprocessamento automático.`);
+        
+        // Recarregar dados para mostrar os novos sinais
+        await loadData();
+      } else {
+        console.error('❌ Erro no download:', data.error);
+        alert(`❌ Erro: ${data.error || 'Falha ao baixar sinais'}`);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao baixar sinais:', error);
+      alert('❌ Erro ao conectar com o servidor. Tente novamente.');
+    } finally {
+      setIsDownloadingSignals(false);
+    }
+  };
+  
   // Configurar auto-refresh
   useEffect(() => {
     if (isAutoRefreshEnabled) {
@@ -1373,6 +1476,24 @@ const BTCAnalysisPage: React.FC = () => {
               </CountdownText>
             </RefreshIndicator>
           </AutoRefreshContainer>
+          
+          <DownloadSignalsButton 
+            onClick={handleDownloadSignals}
+            disabled={isDownloadingSignals}
+            title="Baixar sinais gerados após 21:00 para reprocessamento automático"
+          >
+            {isDownloadingSignals ? (
+              <>
+                <FaHourglassHalf className="fa-spin" size={12} />
+                Baixando...
+              </>
+            ) : (
+              <>
+                <FaSync size={12} />
+                Baixar Sinais
+              </>
+            )}
+          </DownloadSignalsButton>
           
           <RefreshButton 
             onClick={handleManualRefresh}

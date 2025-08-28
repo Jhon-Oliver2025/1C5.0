@@ -1544,3 +1544,65 @@ class BTCSignalManager:
                 'monitoring_system_status': 'error',
                 'error': str(e)
             }
+    
+    def add_signal_for_reanalysis(self, signal_data: Dict[str, Any]) -> bool:
+        """Adiciona sinal baixado do Supabase para reprocessamento automático"""
+        try:
+            print(f"🔄 Adicionando sinal para reprocessamento: {signal_data.get('symbol')} - {signal_data.get('type')}")
+            
+            # Verificar se o sinal já existe nos pendentes (evitar duplicação)
+            signal_key = (signal_data.get('symbol'), signal_data.get('type'))
+            existing_signal = next(
+                (s for s in self.pending_signals if (s['symbol'], s['type']) == signal_key),
+                None
+            )
+            
+            if existing_signal:
+                print(f"⚠️ Sinal {signal_data.get('symbol')} - {signal_data.get('type')} já existe nos pendentes")
+                return False
+            
+            # Criar sinal pendente para reprocessamento
+            from datetime import datetime, timedelta
+            import uuid
+            
+            # Usar timezone de São Paulo
+            sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
+            now_sp = datetime.now(sao_paulo_tz)
+            
+            # Criar sinal pendente
+            pending_signal = {
+                'id': str(uuid.uuid4()),
+                'symbol': signal_data.get('symbol'),
+                'type': signal_data.get('type'),
+                'entry_price': signal_data.get('entry_price'),
+                'target_price': signal_data.get('target_price'),
+                'projection_percentage': signal_data.get('projection_percentage'),
+                'quality_score': signal_data.get('quality_score'),
+                'signal_class': signal_data.get('signal_class'),
+                'created_at': now_sp.strftime('%d/%m/%Y %H:%M:%S'),
+                'expires_at': (now_sp + timedelta(hours=24)).strftime('%d/%m/%Y %H:%M:%S'),
+                'confirmation_attempts': 0,
+                'status': 'PENDING_REANALYSIS',
+                'reprocessed_from_supabase': True,
+                'original_supabase_data': signal_data.get('original_supabase_data', {}),
+                'original_data': signal_data,
+                'btc_correlation': 0.0,
+                'btc_trend': 'NEUTRAL'
+            }
+            
+            # Adicionar à lista de pendentes
+            self.pending_signals.append(pending_signal)
+            
+            print(f"✅ Sinal {signal_data.get('symbol')} adicionado para reprocessamento automático")
+            print(f"📊 Total de sinais pendentes: {len(self.pending_signals)}")
+            
+            # O sistema de confirmação automática processará este sinal
+            # na próxima execução do ciclo de análise
+            
+            return True
+            
+        except Exception as e:
+            print(f"❌ Erro ao adicionar sinal para reprocessamento: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
