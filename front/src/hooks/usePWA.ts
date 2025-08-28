@@ -92,93 +92,53 @@ export const usePWA = (): PWAHook => {
            (window.navigator as any).standalone === true;
   }, []);
 
-  // Verificar se PWA é instalável
-  const checkPWAInstallability = useCallback(async (): Promise<boolean> => {
-    try {
-      // Verificar se Service Worker está registrado
-      if (!('serviceWorker' in navigator)) {
-        return false;
-      }
-      
-      const registration = await navigator.serviceWorker.getRegistration();
-      if (!registration) {
-        return false;
-      }
-      
-      // Verificar se manifest existe
-      const manifestLink = document.querySelector('link[rel="manifest"]') as HTMLLinkElement;
-      if (!manifestLink) {
-        return false;
-      }
-      
-      // Tentar buscar o manifest
-      try {
-        const response = await fetch(manifestLink.href);
-        const manifest = await response.json();
-        
-        // Verificar propriedades essenciais do manifest
-        if (!manifest.name || !manifest.start_url || !manifest.display || !manifest.icons) {
-          return false;
-        }
-        
-        // Verificar se tem ícones adequados
-        const hasValidIcons = manifest.icons.some((icon: any) => 
-          icon.sizes && (icon.sizes.includes('192x192') || icon.sizes.includes('512x512'))
-        );
-        
-        return hasValidIcons;
-      } catch {
-        return false;
-      }
-    } catch {
-      return false;
-    }
+  // Verificar se PWA é instalável (versão simplificada)
+  const checkPWAInstallability = useCallback((): boolean => {
+    // Sempre permitir instalação - deixar o navegador decidir
+    return true;
   }, []);
 
-  // Inicializar capacidades
+  // Inicializar capacidades (versão simplificada)
   useEffect(() => {
-    const initializeCapabilities = async () => {
-      const platform = detectPlatform();
-      const isInstalled = checkIfInstalled();
-      const isStandalone = checkIfStandalone();
-      const isPWAInstallable = await checkPWAInstallability();
-      
-      setCapabilities(prev => ({
-         ...prev,
-         platform,
-         isInstalled,
-         isStandalone,
-         canInstall: !isInstalled && (platform === 'android' || (platform !== 'unknown' && isPWAInstallable))
-       }));
-    };
+    const platform = detectPlatform();
+    const isInstalled = checkIfInstalled();
+    const isStandalone = checkIfStandalone();
     
-    initializeCapabilities();
-  }, [detectPlatform, checkIfInstalled, checkIfStandalone, checkPWAInstallability]);
+    setCapabilities(prev => ({
+       ...prev,
+       platform,
+       isInstalled,
+       isStandalone,
+       canInstall: true // Sempre permitir instalação
+    }));
+  }, [detectPlatform, checkIfInstalled, checkIfStandalone]);
+
+  // Registrar Service Worker simples
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          console.log('✅ Service Worker registrado:', registration);
+        })
+        .catch(error => {
+          console.log('❌ Erro ao registrar Service Worker:', error);
+        });
+    }
+  }, []);
 
   // Listener para evento de instalação
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
+      console.log('🎯 beforeinstallprompt event fired');
       e.preventDefault();
       setInstallPrompt(e as any);
-      setCapabilities(prev => ({ ...prev, isInstallable: true, canInstall: true }));
-    };
-
-    const handleAppInstalled = () => {
-      setInstallPrompt(null);
-      setCapabilities(prev => ({ 
-        ...prev, 
-        isInstalled: true, 
-        isInstallable: false,
-        canInstall: false 
-      }));
+      setCapabilities(prev => ({ ...prev, isInstallable: true }));
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', handleAppInstalled);
-
+    
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
 
