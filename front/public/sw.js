@@ -58,9 +58,6 @@ self.addEventListener('install', (event) => {
       cacheBackgroundResources()
     ])
   );
-  
-  // Ativar imediatamente
-  self.skipWaiting();
 });
 
 /**

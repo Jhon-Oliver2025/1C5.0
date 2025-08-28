@@ -117,12 +117,9 @@
             
             const registration = await navigator.serviceWorker.register('/sw.js', {
               scope: '/',
-              updateViaCache: 'none' // Forçar atualização
+              updateViaCache: 'none'
             });
             console.log('✅ Service Worker registrado v3.3:', registration.scope);
-            
-            // Forçar atualização imediata se houver nova versão
-            await registration.update();
             
             // Criar evento beforeinstallprompt sintético para Android
             setTimeout(() => {
