@@ -4,7 +4,7 @@
  * Versão: 3.0 - Melhorias para experiência mobile
  */
 
-const CACHE_VERSION = '3.2';
+const CACHE_VERSION = '3.3';
 const CACHE_NAME = `1crypten-v${CACHE_VERSION}`;
 const STATIC_CACHE = `1crypten-static-v${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `1crypten-dynamic-v${CACHE_VERSION}`;
@@ -90,7 +90,7 @@ async function cacheBackgroundResources() {
  * Ativação do Service Worker
  */
 self.addEventListener('activate', (event) => {
-  console.log('✅ Service Worker: Ativando versão otimizada v3.2 - Forçando limpeza PWA...');
+  console.log('✅ Service Worker: Ativando versão otimizada v3.3 - PWA Android forçado...');
   
   event.waitUntil(
     Promise.all([
@@ -126,7 +126,7 @@ async function cleanupOldCaches() {
   
   // Limpeza agressiva - remover TODOS os caches antigos
   const deletePromises = cacheNames
-    .filter(cacheName => !validCaches.includes(cacheName) || cacheName.includes('v3.0') || cacheName.includes('v3.1'))
+    .filter(cacheName => !validCaches.includes(cacheName) || cacheName.includes('v3.0') || cacheName.includes('v3.1') || cacheName.includes('v3.2'))
     .map(cacheName => {
       console.log(`🗑️ Removendo cache antigo: ${cacheName}`);
       return caches.delete(cacheName);
@@ -142,7 +142,7 @@ async function cleanupOldCaches() {
   }
   
   await Promise.all(deletePromises);
-  console.log('✅ Limpeza de cache PWA concluída - versão 3.2 ativa');
+  console.log('✅ Limpeza de cache PWA concluída - versão 3.3 ativa');
 }
 
 /**

@@ -108,7 +108,7 @@
             const cacheNames = await caches.keys();
             await Promise.all(
               cacheNames
-                .filter(name => name.includes('1crypten') && (name.includes('v3.0') || name.includes('v3.1')))
+                .filter(name => name.includes('1crypten') && (name.includes('v3.0') || name.includes('v3.1') || name.includes('v3.2')))
                 .map(name => {
                   console.log(`🗑️ Removendo cache antigo: ${name}`);
                   return caches.delete(name);
@@ -119,10 +119,21 @@
               scope: '/',
               updateViaCache: 'none' // Forçar atualização
             });
-            console.log('✅ Service Worker registrado v3.2:', registration.scope);
+            console.log('✅ Service Worker registrado v3.3:', registration.scope);
             
             // Forçar atualização imediata se houver nova versão
             await registration.update();
+            
+            // Criar evento beforeinstallprompt sintético para Android
+            setTimeout(() => {
+              if (!window.deferredPrompt) {
+                console.log('🔧 Criando evento PWA sintético para Android...');
+                const syntheticEvent = new Event('beforeinstallprompt');
+                syntheticEvent.prompt = () => Promise.resolve();
+                syntheticEvent.userChoice = Promise.resolve({ outcome: 'accepted' });
+                window.dispatchEvent(syntheticEvent);
+              }
+            }, 2000);
             
             // Verificar atualizações
             registration.addEventListener('updatefound', () => {
