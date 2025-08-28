@@ -331,7 +331,7 @@ self.addEventListener('install', (event) => {
       // Cache de recursos estáticos
       caches.open(STATIC_CACHE).then((cache) => {
         console.log('📦 Service Worker: Fazendo cache dos recursos estáticos');
-        return cache.addAll(STATIC_ASSETS.map(url => {
+        return cache.addAll(CRITICAL_RESOURCES.map(url => {
           return new Request(url, { cache: 'reload' });
         }));
       }),
