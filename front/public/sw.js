@@ -73,7 +73,7 @@ async function cacheBackgroundResources() {
  * Ativação do Service Worker
  */
 self.addEventListener('activate', (event) => {
-  console.log('✅ Service Worker: Ativando versão otimizada v3.3 - PWA Android forçado...');
+  console.log('✅ Service Worker: Ativando versão otimizada v3.4...');
   
   event.waitUntil(
     Promise.all([
@@ -109,7 +109,7 @@ async function cleanupOldCaches() {
   }
   
   await Promise.all(deletePromises);
-  console.log('✅ Limpeza de cache PWA concluída - versão 3.3 ativa');
+  console.log('✅ Limpeza de cache PWA concluída - versão 3.4 ativa');
 }
 
 /**
