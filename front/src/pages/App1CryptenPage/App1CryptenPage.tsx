@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import styles from './App1CryptenPage.module.css';
 import logo3 from '/logo3.png';
 import '../Dashboard/DashboardMobile.css';
-import usePWA from '../../hooks/usePWA';
+import usePWAOptimized from '../../hooks/usePWAOptimized';
 import PWAInstallPrompt from '../../components/PWA/PWAInstallPrompt';
 import PWASplashScreen from '../../components/PWA/PWASplashScreen';
 
@@ -20,7 +20,7 @@ import PWASplashScreen from '../../components/PWA/PWASplashScreen';
  * Página principal do App 1Crypten
  */
 const App1CryptenPage: React.FC = () => {
-  const { capabilities, showInstallPrompt, addToHomeScreen } = usePWA();
+  const { capabilities, showInstallPrompt, addToHomeScreen, workboxReady } = usePWAOptimized();
   const [isInstalling, setIsInstalling] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
 
@@ -78,11 +78,17 @@ const App1CryptenPage: React.FC = () => {
           </div>
           
           {/* Status do App */}
-          {capabilities.isInstalled ? (
+          {!workboxReady && (
+            <div className={styles.loadingBadge}>
+              🔄 Carregando PWA otimizado...
+            </div>
+          )}
+          
+          {workboxReady && capabilities.isInstalled ? (
             <div className={styles.installedBadge}>
               ✅ App Instalado
             </div>
-          ) : (
+          ) : workboxReady ? (
             <button 
               className={styles.installButton}
               onClick={handleInstallApp}
@@ -96,15 +102,21 @@ const App1CryptenPage: React.FC = () => {
               ) : (
                 <>
                   <span className={styles.downloadIcon}>📱</span>
-                  {capabilities.platform === 'ios' ? 'Ver Instruções' : 'Instalar App'}
+                  {capabilities.platform === 'ios' ? 'Ver Instruções' : 'Instalar App Otimizado'}
                 </>
               )}
             </button>
+          ) : null}
+          
+          {workboxReady && !capabilities.canInstall && !capabilities.isInstalled && (
+            <div className={styles.notSupportedBadge}>
+              ⚠️ PWA não disponível neste navegador
+            </div>
           )}
           
-          {!capabilities.canInstall && !capabilities.isInstalled && (
-            <div className={styles.notSupportedBadge}>
-              ⚠️ Instalação não suportada neste navegador
+          {workboxReady && capabilities.hasBeforeInstallPrompt && (
+            <div className={styles.pwaBadge}>
+              ✅ PWA Otimizado Ativo
             </div>
           )}
         </div>
