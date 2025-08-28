@@ -18,8 +18,6 @@ const CRITICAL_RESOURCES = [
   '/',
   '/login',
   '/dashboard',
-  '/static/js/main.js',
-  '/static/css/main.css',
   '/logo3.png',
   '/terra2.png',
   '/manifest.json'
