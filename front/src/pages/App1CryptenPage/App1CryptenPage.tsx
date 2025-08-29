@@ -12,6 +12,7 @@ import usePWA from '../../hooks/usePWA';
 import PWAInstallPrompt from '../../components/PWA/PWAInstallPrompt';
 import PWASplashScreen from '../../components/PWA/PWASplashScreen';
 import PWAInstallButton from '../../components/PWAInstallButton/PWAInstallButton';
+import PWAInstallInstructions from '../../components/PWAInstallInstructions/PWAInstallInstructions';
 
 /**
  * Página principal do App 1Crypten com PWA nativo
@@ -230,6 +231,9 @@ const App1CryptenPage: React.FC = () => {
           
           {/* Botão de instalação PWA personalizado */}
           <PWAInstallButton />
+          
+          {/* Instruções detalhadas de instalação */}
+          <PWAInstallInstructions />
           
           {/* Botão de fallback para casos especiais */}
           <button 

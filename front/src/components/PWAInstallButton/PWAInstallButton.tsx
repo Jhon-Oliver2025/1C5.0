@@ -74,9 +74,17 @@ const PWAInstallButton: React.FC = () => {
     const fallbackTimer = setTimeout(() => {
       if (!deferredPrompt && !isInstalled) {
         console.log('⚠️ PWA: Evento beforeinstallprompt não capturado, usando fallback');
-        setIsInstallable(true);
+        const deviceSupport = checkDeviceSupport();
+        
+        // Mostrar botão se o dispositivo suporta instalação PWA
+        if (deviceSupport.supportsInstallation) {
+          setIsInstallable(true);
+          console.log('📱 PWA: Botão de instalação ativado via fallback para', deviceSupport.platform, deviceSupport.browser);
+        } else {
+          console.log('⚠️ PWA: Dispositivo não suporta instalação PWA');
+        }
       }
-    }, 3000);
+    }, 2000); // Reduzido para 2 segundos
 
     // Cleanup
     return () => {
@@ -90,30 +98,53 @@ const PWAInstallButton: React.FC = () => {
    * Função para instalar o PWA
    */
   const handleInstallClick = async () => {
-    if (!deferredPrompt) {
-      console.warn('⚠️ PWA: Prompt de instalação não disponível');
-      return;
-    }
-
-    try {
-      // Mostrar o prompt de instalação
-      await deferredPrompt.prompt();
-      
-      // Aguardar a escolha do usuário
-      const { outcome } = await deferredPrompt.userChoice;
-      
-      console.log(`🎯 PWA: Usuário ${outcome === 'accepted' ? 'aceitou' : 'rejeitou'} a instalação`);
-      
-      if (outcome === 'accepted') {
-        setIsInstalled(true);
+    const deviceSupport = checkDeviceSupport();
+    
+    if (deferredPrompt) {
+      try {
+        // Mostrar o prompt de instalação
+        await deferredPrompt.prompt();
+        
+        // Aguardar a escolha do usuário
+        const { outcome } = await deferredPrompt.userChoice;
+        
+        console.log(`🎯 PWA: Usuário ${outcome === 'accepted' ? 'aceitou' : 'rejeitou'} a instalação`);
+        
+        if (outcome === 'accepted') {
+          setIsInstalled(true);
+        }
+        
+        // Limpar o prompt
+        setDeferredPrompt(null);
+        setIsInstallable(false);
+      } catch (error) {
+        console.error('❌ PWA: Erro ao instalar:', error);
       }
-      
-      // Limpar o prompt
-      setDeferredPrompt(null);
-      setIsInstallable(false);
-    } catch (error) {
-      console.error('❌ PWA: Erro ao instalar:', error);
+    } else {
+      // Fallback: mostrar instruções específicas por plataforma
+      showInstallInstructions(deviceSupport);
     }
+  };
+  
+  /**
+   * Mostra instruções de instalação específicas por plataforma
+   */
+  const showInstallInstructions = (deviceSupport: any) => {
+    let instructions = '';
+    
+    if (deviceSupport.platform === 'android') {
+      if (deviceSupport.browser === 'chrome') {
+        instructions = 'No Chrome Android:\n1. Toque no menu (⋮) no canto superior direito\n2. Selecione "Adicionar à tela inicial"\n3. Confirme a instalação';
+      } else {
+        instructions = 'Para instalar:\n1. Abra este site no Chrome\n2. Toque no menu (⋮)\n3. Selecione "Adicionar à tela inicial"';
+      }
+    } else if (deviceSupport.platform === 'ios') {
+      instructions = 'No Safari iOS:\n1. Toque no botão de compartilhar (□↗)\n2. Role para baixo e toque em "Adicionar à Tela de Início"\n3. Toque em "Adicionar"';
+    } else {
+      instructions = 'No navegador desktop:\n1. Procure pelo ícone de instalação na barra de endereços\n2. Ou use Ctrl+Shift+A (Chrome)\n3. Ou acesse Menu > Instalar aplicativo';
+    }
+    
+    alert(instructions);
   };
 
   // Não mostrar se já estiver instalado
@@ -130,13 +161,26 @@ const PWAInstallButton: React.FC = () => {
     return null;
   }
 
+  const deviceSupport = checkDeviceSupport();
+  const buttonText = deferredPrompt 
+    ? 'Instalar 1Crypten'
+    : deviceSupport.platform === 'android' 
+      ? 'Como Instalar no Android'
+      : deviceSupport.platform === 'ios'
+        ? 'Como Instalar no iPhone'
+        : 'Como Instalar no Desktop';
+        
+  const buttonSubtitle = deferredPrompt
+    ? 'Acesso rápido como app nativo'
+    : 'Ver instruções de instalação';
+
   return (
     <InstallContainer>
       <InstallButton onClick={handleInstallClick}>
         <InstallIcon>📱</InstallIcon>
         <InstallText>
-          <InstallTitle>Instalar 1Crypten</InstallTitle>
-          <InstallSubtitle>Acesso rápido como app nativo</InstallSubtitle>
+          <InstallTitle>{buttonText}</InstallTitle>
+          <InstallSubtitle>{buttonSubtitle}</InstallSubtitle>
         </InstallText>
       </InstallButton>
     </InstallContainer>
