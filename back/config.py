@@ -39,8 +39,12 @@ if IS_PRODUCTION:
     server.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hora
 
 # Validar configurações obrigatórias
-if not server.config['JWT_SECRET']:
-    raise ValueError("❌ JWT_SECRET não está definido!")
+if not server.config['JWT_SECRET'] or server.config['JWT_SECRET'].strip() == '':
+    print("⚠️ JWT_SECRET não definido, usando valor padrão")
+    server.config['JWT_SECRET'] = 'X9&eR3@cM7!zL10prasempre 1*kP5^f'
+
+if len(server.config['JWT_SECRET']) < 10:
+    raise ValueError("❌ JWT_SECRET deve ter pelo menos 10 caracteres!")
 
 print(f"✅ Ambiente: {ENVIRONMENT}")
 print(f"✅ JWT_SECRET configurado: {server.config['JWT_SECRET'][:5]}...")
