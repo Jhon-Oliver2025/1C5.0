@@ -1,0 +1,73 @@
+
+# Docker Compose Otimizado para Corrigir 504 Gateway Timeout
+# Data: 29/08/2025
+
+version: '3.8'
+
+services:
+  backend:
+    build: ./back
+    container_name: crypto-backend
+    environment:
+      # Configurações de performance
+      - GUNICORN_WORKERS=6          # Aumentado
+      - GUNICORN_THREADS=4          # Aumentado
+      - GUNICORN_TIMEOUT=300        # 5 minutos
+      - GUNICORN_KEEPALIVE=10       # Aumentado
+      - GUNICORN_MAX_REQUESTS=1000  # Restart workers
+      - GUNICORN_MAX_REQUESTS_JITTER=100
+      
+      # Configurações de aplicação
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      
+      # Timeouts de banco
+      - DB_CONNECT_TIMEOUT=60
+      - DB_READ_TIMEOUT=120
+      - DB_WRITE_TIMEOUT=120
+      
+    deploy:
+      resources:
+        limits:
+          memory: 4G              # Dobrado
+          cpus: '4.0'             # Dobrado
+        reservations:
+          memory: 1G              # Aumentado
+          cpus: '1.0'             # Aumentado
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 60s             # Reduzido overhead
+      timeout: 30s              # Aumentado
+      retries: 5
+      start_period: 120s        # Mais tempo para inicialização
+    
+    restart: unless-stopped
+    
+  nginx:
+    image: nginx:alpine
+    container_name: crypto-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./front/dist:/var/www/html
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    
+    # Configurações de sistema
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'

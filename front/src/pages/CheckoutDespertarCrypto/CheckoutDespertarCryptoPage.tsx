@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Shield, Lock, CreditCard, CheckCircle, Star, Clock, Users, Award, Zap } from 'lucide-react';
-import MercadoPagoCheckout from '../../components/MercadoPagoCheckout/MercadoPagoCheckout';
+import TwoStepCheckout from '../../components/TwoStepCheckout/TwoStepCheckout';
 import StandardFooter from '../../components/StandardFooter/StandardFooter';
 import BannerChe01 from '../../assets/Checkouts/BannerChe01.png';
 import Selo1 from '../../assets/Checkouts/selo 1.png';
@@ -546,15 +546,17 @@ const CheckoutDespertarCryptoPage: React.FC = () => {
       <MainContent>
         {/* Seção do Checkout (Esquerda) */}
         <CheckoutSection>
-          <MercadoPagoCheckout
+          <TwoStepCheckout
             courseId={courseData.id}
             course={{
+              id: courseData.id,
               name: courseData.name,
               description: courseData.description,
               price: courseData.price
             }}
             onSuccess={(paymentData) => {
               console.log('Pagamento realizado:', paymentData);
+              console.log('Dados do cliente:', paymentData.customer);
             }}
             onError={(error) => {
               console.error('Erro no pagamento:', error);

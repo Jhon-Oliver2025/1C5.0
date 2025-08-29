@@ -25,6 +25,7 @@ import PaymentSuccessPage from './pages/Payment/PaymentSuccessPage';
 import PaymentFailurePage from './pages/Payment/PaymentFailurePage';
 import CheckoutDemoPage from './pages/CheckoutDemo/CheckoutDemoPage';
 import CheckoutDespertarCryptoPage from './pages/CheckoutDespertarCrypto/CheckoutDespertarCryptoPage';
+import CheckoutTransparenteTest from './pages/CheckoutTransparenteTest/CheckoutTransparenteTest';
 import SalesPage from './pages/SalesPage/SalesPage';
 import SalesAdminPage from './pages/SalesAdmin/SalesAdminPage';
 import AdminRoute from './components/AdminRoute/AdminRoute';
@@ -115,6 +116,7 @@ function AppRoutes() {
          </ProtectedRoute>
        } />
       <Route path="/checkout-demo" element={<CheckoutDemoPage />} />
+      <Route path="/checkout-transparente-test" element={<CheckoutTransparenteTest />} />
       <Route path="/checkout/despertar-crypto" element={<CheckoutDespertarCryptoPage />} />
       <Route path="/sales" element={<SalesPage />} />
       <Route path="/sales-admin" element={

@@ -322,9 +322,20 @@ interface Course {
   price: number;
 }
 
+interface CustomerData {
+  name: string;
+  email: string;
+  phone: string;
+  cpf: string;
+  zipCode: string;
+  city: string;
+  state: string;
+}
+
 interface MercadoPagoCheckoutProps {
   courseId: string;
   course: Course;
+  customerData?: CustomerData;
   onSuccess?: (paymentData: any) => void;
   onError?: (error: string) => void;
   className?: string;
@@ -337,6 +348,7 @@ interface MercadoPagoCheckoutProps {
 const MercadoPagoCheckout: React.FC<MercadoPagoCheckoutProps> = ({
   courseId,
   course,
+  customerData,
   onSuccess,
   onError,
   className
