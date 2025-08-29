@@ -1,8 +1,11 @@
 # Coolify Configuration
 # Este arquivo ajuda o Coolify a entender como fazer o deploy da aplicação
 
-# Porta principal da aplicação
+# Porta principal da aplicação (frontend)
 PORT=3000
+
+# Porta da API (backend)
+API_PORT=5000
 
 # Tipo de aplicação
 APP_TYPE=docker-compose
@@ -10,8 +13,12 @@ APP_TYPE=docker-compose
 # Arquivo Docker Compose para produção
 DOCKER_COMPOSE_FILE=docker-compose.coolify.yml
 
-# Health check endpoint
-HEALTH_CHECK_PATH=/api/health
+# Health check endpoint (frontend)
+HEALTH_CHECK_PATH=/
+
+# Roteamento de API
+API_PROXY_PATH=/api/*
+API_PROXY_TARGET=http://backend:5000
 
 # Variáveis de ambiente necessárias
 REQUIRED_ENV_VARS=BINANCE_API_KEY,BINANCE_SECRET_KEY,TELEGRAM_BOT_TOKEN,TELEGRAM_CHAT_ID,JWT_SECRET_KEY,SENDPULSE_API_USER_ID,SENDPULSE_API_SECRET
