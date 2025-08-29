@@ -1,11 +1,24 @@
 # Coolify Configuration
 # Este arquivo ajuda o Coolify a entender como fazer o deploy da aplicação
 
+# Configuração de múltiplos domínios
+DOMAINS=1crypten.space,api.1crypten.space
+
 # Porta principal da aplicação (frontend)
 PORT=3000
 
-# Porta da API (backend)
-API_PORT=5000
+# Configuração de serviços
+SERVICES=frontend,backend
+
+# Frontend
+FRONTEND_DOMAIN=1crypten.space
+FRONTEND_PORT=3000
+FRONTEND_SERVICE=frontend
+
+# Backend API
+BACKEND_DOMAIN=api.1crypten.space
+BACKEND_PORT=5000
+BACKEND_SERVICE=backend
 
 # Tipo de aplicação
 APP_TYPE=docker-compose
@@ -13,12 +26,13 @@ APP_TYPE=docker-compose
 # Arquivo Docker Compose para produção
 DOCKER_COMPOSE_FILE=docker-compose.coolify.yml
 
-# Health check endpoint (frontend)
-HEALTH_CHECK_PATH=/
+# Health check endpoints
+FRONTEND_HEALTH_CHECK_PATH=/
+BACKEND_HEALTH_CHECK_PATH=/api/status
 
-# Roteamento de API
-API_PROXY_PATH=/api/*
-API_PROXY_TARGET=http://backend:5000
+# SSL Configuration
+SSL_ENABLED=true
+SSL_PROVIDER=letsencrypt
 
 # Variáveis de ambiente necessárias
 REQUIRED_ENV_VARS=BINANCE_API_KEY,BINANCE_SECRET_KEY,TELEGRAM_BOT_TOKEN,TELEGRAM_CHAT_ID,JWT_SECRET_KEY,SENDPULSE_API_USER_ID,SENDPULSE_API_SECRET

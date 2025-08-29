@@ -19,11 +19,12 @@ services:
       timeout: 3s
       retries: 3
 
+  # Remover todos os labels Traefik complexos e usar configuração mais simples
   backend:
     build: ./back
     container_name: crypto-backend
     ports:
-      - "5000:5000"  # Expor para Coolify
+      - "5000:5000"
     environment:
       - FLASK_ENV=production
       - REDIS_URL=redis://redis:6379/0
@@ -80,11 +81,13 @@ services:
       retries: 3
       start_period: 60s
 
+  # Remover labels Traefik - deixar Coolify gerenciar
+  
   frontend:
     build: ./front
     container_name: crypto-frontend
     ports:
-      - "3000:80"  # Expor para Coolify
+      - "3000:80"
     environment:
       - REACT_APP_API_URL=https://api.1crypten.space
       - REACT_APP_DOMAIN=https://1crypten.space
