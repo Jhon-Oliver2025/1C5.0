@@ -8,46 +8,50 @@ services:
   redis:
     image: redis:7-alpine
     container_name: crypto-redis
+    restart: unless-stopped
     volumes:
       - redis_data:/data
-    restart: unless-stopped
     networks:
       - crypto-network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+        reservations:
+          memory: 64M
+          cpus: '0.1'
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
+      interval: 30s
+      timeout: 10s
       retries: 3
 
-  # Remover todos os labels Traefik complexos e usar configuração mais simples
   backend:
     build: ./back
     container_name: crypto-backend
-    ports:
-      - "5000:5000"
     environment:
       - FLASK_ENV=production
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=${SECRET_KEY:-gZ4vNpWq8sB2kF6a10prasempre}
-       - JWT_SECRET=${JWT_SECRET:-X9eR3cM7zL10prasempre1kP5f}
-       - BINANCE_API_KEY=${BINANCE_API_KEY:-aUApdM0jyXeyI1HPxHymi9hSD6QZ3TXFORTknlyc1jADrkCJ7SNSayoZ6oiPCYEj}
-       - BINANCE_SECRET_KEY=${BINANCE_SECRET_KEY:-YGt2MXqsIhgjk6EsCwRCUjB3LpZ0L8xGAt9w4JYK6wyX2LveLHBFvRjoyBfIVcZM}
-       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-7690455274:AAHB64l8csWoE5UpV1Pnn9c8chJzd5sZTXQ}
-       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-1249100206}
-       - SENDPULSE_CLIENT_ID=${SENDPULSE_CLIENT_ID:-7b28b045d31c3d6d51591d7f56a26c99}
-       - SENDPULSE_CLIENT_SECRET=${SENDPULSE_CLIENT_SECRET:-26393054ce0cd24fc16a73382a3d5eef}
-       - SENDPULSE_SENDER_EMAIL=${SENDPULSE_SENDER_EMAIL:-crypten@portaldigital10.com}
-       - SENDPULSE_API_URL=${SENDPULSE_API_URL:-https://api.sendpulse.com}
-       - SUPABASE_URL=${SUPABASE_URL:-https://fvwdcsqucajnqupsprmo.supabase.co}
-       - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2d2Rjc3F1Y2FqbnF1cHNwcm1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMTAzNzUsImV4cCI6MjA2ODc4NjM3NX0.h7cNPa_WtSn7s1DDPAdBhLqUZYQLJbn3wDoAIMEFYyQ}
-       - SUPABASE_DATABASE_URL=${SUPABASE_DATABASE_URL:-postgresql://postgres:Fh@xj_wgU-D2Vde@db.fvwdcsqucajnqupsprmo.supabase.co:5432/postgres}
-       - MERCADO_PAGO_ACCESS_TOKEN=${MERCADO_PAGO_ACCESS_TOKEN:-TEST-6555567678065222-081500-d19fea4c0e7513745e4aba7f14244ba4-150384131}
-       - MERCADO_PAGO_PUBLIC_KEY=${MERCADO_PAGO_PUBLIC_KEY:-TEST-49cb27ee-fe8c-4aa0-b055-092bf4616484}
-       - CORS_ORIGINS=https://1crypten.space,https://www.1crypten.space
-       - API_BASE_URL=https://api.1crypten.space
-       - FRONTEND_URL=https://1crypten.space
-       - BACKEND_URL=https://api.1crypten.space
-      # Configurações de performance
+      - JWT_SECRET=${JWT_SECRET:-X9eR3cM7zL10prasempre1kP5f}
+      - BINANCE_API_KEY=${BINANCE_API_KEY:-aUApdM0jyXeyI1HPxHymi9hSD6QZ3TXFORTknlyc1jADrkCJ7SNSayoZ6oiPCYEj}
+      - BINANCE_SECRET_KEY=${BINANCE_SECRET_KEY:-YGt2MXqsIhgjk6EsCwRCUjB3LpZ0L8xGAt9w4JYK6wyX2LveLHBFvRjoyBfIVcZM}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-7690455274:AAHB64l8csWoE5UpV1Pnn9c8chJzd5sZTXQ}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-1249100206}
+      - SENDPULSE_CLIENT_ID=${SENDPULSE_CLIENT_ID:-7b28b045d31c3d6d51591d7f56a26c99}
+      - SENDPULSE_CLIENT_SECRET=${SENDPULSE_CLIENT_SECRET:-26393054ce0cd24fc16a73382a3d5eef}
+      - SENDPULSE_SENDER_EMAIL=${SENDPULSE_SENDER_EMAIL:-crypten@portaldigital10.com}
+      - SENDPULSE_API_URL=${SENDPULSE_API_URL:-https://api.sendpulse.com}
+      - SUPABASE_URL=${SUPABASE_URL:-https://fvwdcsqucajnqupsprmo.supabase.co}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2d2Rjc3F1Y2FqbnF1cHNwcm1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMTAzNzUsImV4cCI6MjA2ODc4NjM3NX0.h7cNPa_WtSn7s1DDPAdBhLqUZYQLJbn3wDoAIMEFYyQ}
+      - SUPABASE_DATABASE_URL=${SUPABASE_DATABASE_URL:-postgresql://postgres:Fh@xj_wgU-D2Vde@db.fvwdcsqucajnqupsprmo.supabase.co:5432/postgres}
+      - MERCADO_PAGO_ACCESS_TOKEN=${MERCADO_PAGO_ACCESS_TOKEN:-TEST-6555567678065222-081500-d19fea4c0e7513745e4aba7f14244ba4-150384131}
+      - MERCADO_PAGO_PUBLIC_KEY=${MERCADO_PAGO_PUBLIC_KEY:-TEST-49cb27ee-fe8c-4aa0-b055-092bf4616484}
+      - CORS_ORIGINS=https://1crypten.space,https://www.1crypten.space,https://api.1crypten.space
+      - API_BASE_URL=https://api.1crypten.space
+      - FRONTEND_URL=https://1crypten.space
+      - BACKEND_URL=https://api.1crypten.space
       - GUNICORN_WORKERS=4
       - GUNICORN_THREADS=2
       - GUNICORN_TIMEOUT=120
@@ -60,12 +64,6 @@ services:
     restart: unless-stopped
     networks:
       - crypto-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`api.1crypten.space`)"
-      - "traefik.http.routers.api.entrypoints=websecure"
-      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
-      - "traefik.http.services.api.loadbalancer.server.port=5000"
     deploy:
       resources:
         limits:
@@ -75,19 +73,15 @@ services:
           memory: 512M
           cpus: '0.5'
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/status"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
 
-  # Remover labels Traefik - deixar Coolify gerenciar
-  
   frontend:
     build: ./front
     container_name: crypto-frontend
-    ports:
-      - "3000:80"
     environment:
       - REACT_APP_API_URL=https://api.1crypten.space
       - REACT_APP_DOMAIN=https://1crypten.space
@@ -96,12 +90,6 @@ services:
     restart: unless-stopped
     networks:
       - crypto-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`1crypten.space`)"
-      - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.frontend.loadbalancer.server.port=80"
     deploy:
       resources:
         limits:
@@ -116,6 +104,27 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+
+  nginx:
+    image: nginx:alpine
+    container_name: crypto-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-simple.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+    networks:
+      - crypto-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.main.rule=Host(`1crypten.space`) || Host(`api.1crypten.space`)"
+      - "traefik.http.routers.main.entrypoints=websecure"
+      - "traefik.http.routers.main.tls.certresolver=letsencrypt"
+      - "traefik.http.services.main.loadbalancer.server.port=80"
 
 volumes:
   redis_data:
