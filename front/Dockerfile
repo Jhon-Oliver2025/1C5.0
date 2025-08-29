@@ -28,27 +28,24 @@ ENV CI=true
 # Build simples
 RUN npm run build
 
-# Estágio 2: Servir com Nginx
-FROM nginx:alpine
+# Estágio 2: Servir com Node.js (sem Nginx)
+FROM node:20-alpine
 
-# Instalar curl para health check
-RUN apk add --no-cache curl
-
-# Copiar configuração do Nginx
-COPY nginx.conf /etc/nginx/nginx.conf
+# Instalar curl para health check e serve para servir arquivos
+RUN apk add --no-cache curl && npm install -g serve
 
 # Copiar arquivos buildados
-COPY --from=0 /app/dist /usr/share/nginx/html
+COPY --from=0 /app/dist /app
 
 # Criar fallback se necessário
-RUN test -f /usr/share/nginx/html/index.html || echo '<h1>Build Error</h1>' > /usr/share/nginx/html/index.html
+RUN test -f /app/index.html || echo '<h1>Build Error</h1>' > /app/index.html
 
 # Expor porta
 EXPOSE 80
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/ || exit 1
+  CMD curl -f http://localhost:80/ || exit 1
 
-# Comando padrão
-CMD ["nginx", "-g", "daemon off;"]
+# Comando para servir arquivos estáticos
+CMD ["serve", "-s", "/app", "-l", "80"]
