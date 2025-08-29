@@ -40,6 +40,49 @@ class SupabaseAuth:
             print(f"DEBUG: SUPABASE_URL: {self.supabase_url}")
             print(f"DEBUG: SUPABASE_ANON_KEY: {self.supabase_anon_key}")
     
+    def save_signal_to_supabase(self, signal_data: dict) -> bool:
+        """Salva sinal confirmado no Supabase"""
+        if not self.is_available:
+            print("⚠️ Supabase não disponível para salvar sinal")
+            return False
+            
+        try:
+            # Preparar dados do sinal para o Supabase
+            supabase_signal = {
+                'symbol': signal_data.get('symbol'),
+                'type': signal_data.get('type'),
+                'entry_price': float(signal_data.get('entry_price', 0)),
+                'target_price': float(signal_data.get('target_price', 0)),
+                'projection_percentage': float(signal_data.get('projection_percentage', 0)),
+                'quality_score': float(signal_data.get('quality_score', 0)),
+                'signal_class': signal_data.get('signal_class'),
+                'status': 'CONFIRMED',
+                'created_at': signal_data.get('entry_time'),
+                'confirmed_at': signal_data.get('confirmed_at'),
+                'confirmation_reasons': signal_data.get('confirmation_reasons', ''),
+                'confirmation_attempts': int(signal_data.get('confirmation_attempts', 0)),
+                'btc_correlation': float(signal_data.get('btc_correlation', 0)),
+                'btc_trend': signal_data.get('btc_trend', 'NEUTRAL')
+            }
+            
+            # Fazer POST para a tabela signals no Supabase
+            response = requests.post(
+                f"{self.supabase_url}/rest/v1/signals",
+                headers=self.headers,
+                json=supabase_signal
+            )
+            
+            if response.status_code == 201:
+                print(f"✅ Sinal {signal_data.get('symbol')} salvo no Supabase com sucesso")
+                return True
+            else:
+                print(f"❌ Erro ao salvar sinal no Supabase: {response.status_code} - {response.text}")
+                return False
+                
+        except Exception as e:
+            print(f"❌ Erro ao salvar sinal no Supabase: {e}")
+            return False
+    
     def get_user_by_email(self, email: str) -> dict:
         """Busca usuário por email no Supabase"""
         if not self.is_available:
