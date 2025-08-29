@@ -62,8 +62,8 @@ export default defineConfig(({ mode }) => {
             router: ['react-router-dom']
           },
           assetFileNames: (assetInfo) => {
-            // Manter nome original para vídeos na pasta public
-            if (assetInfo.name && assetInfo.name.endsWith('.mp4')) {
+            // Manter nome original para arquivos específicos
+            if (assetInfo.name && (assetInfo.name.endsWith('.mp4') || assetInfo.name === 'manifest.json')) {
               return '[name][extname]';
             }
             return 'assets/[name]-[hash][extname]';
