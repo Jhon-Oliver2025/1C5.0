@@ -37,6 +37,8 @@ services:
   backend:
     build: ./back
     container_name: crypto-backend
+    ports:
+      - "5000:5000"  # Expor diretamente para Coolify
     environment:
       - FLASK_ENV=production
       - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/crypto_signals
@@ -88,6 +90,8 @@ services:
   frontend:
     build: ./front
     container_name: crypto-frontend
+    ports:
+      - "3000:80"  # Expor diretamente para Coolify
     environment:
       - REACT_APP_API_URL=https://1crypten.space
       - REACT_APP_DOMAIN=https://1crypten.space
@@ -96,22 +100,20 @@ services:
     restart: unless-stopped
     networks:
       - crypto-network
-
-  nginx:
-    image: nginx:alpine
-    container_name: crypto-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/ssl:/etc/nginx/ssl
-    depends_on:
-      - frontend
-      - backend
-    restart: unless-stopped
-    networks:
-      - crypto-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
 volumes:
   postgres_data:

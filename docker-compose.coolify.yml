@@ -1,102 +1,128 @@
+# Docker Compose para Coolify - Sem Nginx
+# Configuração otimizada para deploy no Coolify
+# Data: 29/08/2025
+
 version: '3.8'
 
 services:
-  # Redis Cache
+  postgres:
+    image: postgres:15-alpine
+    container_name: crypto-postgres
+    environment:
+      - POSTGRES_DB=crypto_signals
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./back/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+    networks:
+      - crypto-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   redis:
     image: redis:7-alpine
-    # ports:
-      # - "6379:6379"  # Removido para evitar conflito de porta em produção
+    container_name: crypto-redis
     volumes:
       - redis_data:/data
     restart: unless-stopped
     networks:
-      - app-network
+      - crypto-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  backend:
+    build: ./back
+    container_name: crypto-backend
+    ports:
+      - "5000:5000"  # Expor para Coolify
+    environment:
+      - FLASK_ENV=production
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/crypto_signals
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - BINANCE_API_KEY=${BINANCE_API_KEY}
+      - BINANCE_SECRET_KEY=${BINANCE_SECRET_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - SENDPULSE_CLIENT_ID=${SENDPULSE_CLIENT_ID}
+      - SENDPULSE_CLIENT_SECRET=${SENDPULSE_CLIENT_SECRET}
+      - SENDPULSE_SENDER_EMAIL=${SENDPULSE_SENDER_EMAIL}
+      - SENDPULSE_API_URL=${SENDPULSE_API_URL}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - CORS_ORIGINS=https://1crypten.space,https://www.1crypten.space
+      - API_BASE_URL=https://api.1crypten.space
+      # Configurações de performance
+      - GUNICORN_WORKERS=4
+      - GUNICORN_THREADS=2
+      - GUNICORN_TIMEOUT=120
+      - GUNICORN_KEEPALIVE=5
+    volumes:
+      - ./back/data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - crypto-network
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 2G
+          cpus: '2.0'
         reservations:
-          memory: 128M
+          memory: 512M
+          cpus: '0.5'
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 60s
-      timeout: 30s
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/')"]
+      interval: 30s
+      timeout: 10s
       retries: 5
       start_period: 60s
 
-  # Backend Flask API com Supabase
-  backend:
-    build:
-      context: ./back
-      dockerfile: Dockerfile
-    ports:
-      - "5000:5000"
-    environment:
-      - FLASK_ENV=production
-      - FLASK_DEBUG=0
-      - PYTHONUNBUFFERED=1
-      # Configurações do Supabase
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
-      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
-      - SUPABASE_DATABASE_URL=${SUPABASE_DATABASE_URL}
-      # Redis (mantido)
-      - REDIS_URL=redis://redis:6379/0
-      # Configurações da aplicação
-      - SECRET_KEY=gZ4vNpWq8sB2kF6a10prasempre
-      - JWT_SECRET=X9&eR3@cM7!zL10prasempre 1*kP5^f
-      - FLASK_PORT=5000
-      # APIs externas
-      - USE_BINANCE_API=true
-      - BINANCE_API_KEY=aUApdM0jyXeyI1HPxHymi9hSD6QZ3TXFORTknlyc1jADrkCJ7SNSayoZ6oiPCYEj
-      - BINANCE_SECRET_KEY=YGt2MXqsIhgjk6EsCwRCUjB3LpZ0L8xGAt9w4JYK6wyX2LveLHBFvRjoyBfIVcZM
-      - TELEGRAM_BOT_TOKEN=7690455274:AAHB64l8csWoE5UpV1Pnn9c8chJzd5sZTXQ
-      - TELEGRAM_CHAT_ID=1249100206
-      - SENDPULSE_CLIENT_ID=7b28b045d31c3d6d51591d7f56a26c99
-      - SENDPULSE_CLIENT_SECRET=26393054ce0cd24fc16a73382a3d5eef
-      - SENDPULSE_SENDER_EMAIL=crypten@portaldigital10.com
-    volumes:
-      - ./back/data:/app/data
-    restart: unless-stopped
-    networks:
-      - app-network
-    depends_on:
-      redis:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "python", "healthcheck.py"]
-      interval: 90s
-      timeout: 60s
-      retries: 3
-      start_period: 300s
-
-  # Frontend React App
   frontend:
-    build:
-      context: ./front
-      dockerfile: Dockerfile
+    build: ./front
+    container_name: crypto-frontend
     ports:
-      - "3000:80"
+      - "3000:80"  # Expor para Coolify
     environment:
       - REACT_APP_API_URL=https://1crypten.space
-    restart: unless-stopped
-    networks:
-      - app-network
+      - REACT_APP_DOMAIN=https://1crypten.space
     depends_on:
       - backend
+    restart: unless-stopped
+    networks:
+      - crypto-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:80/health || curl -f http://localhost:80/ || exit 1"]
-      interval: 60s
-      timeout: 30s
-      retries: 5
-      start_period: 120s
-
-
-
-networks:
-  app-network:
-    driver: bridge
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
 volumes:
+  postgres_data:
   redis_data:
-    driver: local
+
+networks:
+  crypto-network:
+    driver: bridge
