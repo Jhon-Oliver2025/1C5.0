@@ -43,31 +43,17 @@ self.addEventListener('install', (event) => {
   console.log('🔧 Service Worker: Instalando versão otimizada...');
   
   event.waitUntil(
-    Promise.all([
-      // Cache crítico - deve ser instalado imediatamente
-      caches.open(STATIC_CACHE).then((cache) => {
-        console.log('📦 Cacheando recursos críticos...');
-        return cache.addAll(CRITICAL_RESOURCES.map(url => new Request(url, { cache: 'reload' })));
-      }),
-      
-      // Cache em background - não bloqueia a instalação
-      cacheBackgroundResources()
-    ])
+    caches.open(STATIC_CACHE).then((cache) => {
+      console.log('📦 Cacheando recursos críticos...');
+      return cache.addAll(CRITICAL_RESOURCES.map(url => new Request(url, { cache: 'reload' })));
+    }).then(() => {
+      // Pular waiting para ativar imediatamente
+      return self.skipWaiting();
+    })
   );
 });
 
-/**
- * Cache de recursos em background
- */
-async function cacheBackgroundResources() {
-  try {
-    console.log('🔄 Cacheando recursos em background...');
-    const cache = await caches.open(DYNAMIC_CACHE);
-    await cache.addAll(BACKGROUND_RESOURCES.map(url => new Request(url, { cache: 'no-cache' })));
-  } catch (error) {
-    console.warn('⚠️ Erro no cache de background:', error);
-  }
-}
+// Função de cache em background removida para evitar loops
 
 /**
  * Ativação do Service Worker
@@ -76,12 +62,10 @@ self.addEventListener('activate', (event) => {
   console.log('✅ Service Worker: Ativando versão otimizada v3.4...');
   
   event.waitUntil(
-    Promise.all([
-      // Limpar caches antigos
-      cleanupOldCaches(),
+    cleanupOldCaches().then(() => {
       // Tomar controle imediatamente
-      self.clients.claim()
-    ])
+      return self.clients.claim();
+    })
   );
 });
 
@@ -89,27 +73,21 @@ self.addEventListener('activate', (event) => {
  * Limpeza de caches antigos
  */
 async function cleanupOldCaches() {
-  const cacheNames = await caches.keys();
-  const oldCaches = cacheNames.filter(name => 
-    name.includes('1crypten') && !name.includes(CACHE_VERSION)
-  );
-  
-  const deletePromises = oldCaches.map(cacheName => {
-    console.log(`🗑️ Removendo cache antigo: ${cacheName}`);
-    return caches.delete(cacheName);
-  });
-  
-  // Forçar limpeza de dados PWA corrompidos
   try {
-    if ('indexedDB' in self) {
-      console.log('🔄 Limpando dados PWA corrompidos...');
+    const cacheNames = await caches.keys();
+    const oldCaches = cacheNames.filter(name => 
+      name.includes('1crypten') && !name.includes(CACHE_VERSION)
+    );
+    
+    if (oldCaches.length > 0) {
+      console.log(`🗑️ Removendo ${oldCaches.length} caches antigos`);
+      await Promise.all(oldCaches.map(cacheName => caches.delete(cacheName)));
     }
+    
+    console.log('✅ Limpeza de cache PWA concluída - versão 3.4 ativa');
   } catch (error) {
-    console.warn('⚠️ Erro na limpeza de dados PWA:', error);
+    console.warn('⚠️ Erro na limpeza de caches:', error);
   }
-  
-  await Promise.all(deletePromises);
-  console.log('✅ Limpeza de cache PWA concluída - versão 3.4 ativa');
 }
 
 /**
