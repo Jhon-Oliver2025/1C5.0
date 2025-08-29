@@ -11,6 +11,7 @@ import '../Dashboard/DashboardMobile.css';
 import usePWA from '../../hooks/usePWA';
 import PWAInstallPrompt from '../../components/PWA/PWAInstallPrompt';
 import PWASplashScreen from '../../components/PWA/PWASplashScreen';
+import PWAInstallButton from '../../components/PWAInstallButton/PWAInstallButton';
 
 /**
  * Página principal do App 1Crypten com PWA nativo
@@ -227,10 +228,15 @@ const App1CryptenPage: React.FC = () => {
             Instale o app 1Crypten agora e tenha acesso aos melhores sinais de trading na palma da sua mão!
           </p>
           
+          {/* Botão de instalação PWA personalizado */}
+          <PWAInstallButton />
+          
+          {/* Botão de fallback para casos especiais */}
           <button 
             className={styles.finalInstallButton}
             onClick={handleInstallApp}
             disabled={isInstalling || !capabilities.canInstall || capabilities.isInstalled}
+            style={{ marginTop: '12px' }}
           >
             {capabilities.isInstalled ? (
               <>
@@ -245,7 +251,7 @@ const App1CryptenPage: React.FC = () => {
             ) : (
               <>
                 <span className={styles.downloadIcon}>📱</span>
-                {capabilities.platform === 'ios' ? 'Ver Instruções de Instalação' : 'Instalar App Agora'}
+                {capabilities.platform === 'ios' ? 'Ver Instruções de Instalação' : 'Adicionar à Tela Inicial'}
               </>
             )}
           </button>
