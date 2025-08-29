@@ -6,28 +6,38 @@
 Configure as seguintes variáveis de ambiente no Coolify:
 
 ```bash
-# Binance API
+# Supabase (OBRIGATÓRIO)
+SUPABASE_URL=https://fvwdcsqucajnqupsprmo.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2d2Rjc3F1Y2FqbnF1cHNwcm1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMTAzNzUsImV4cCI6MjA2ODc4NjM3NX0.h7cNPa_WtSn7s1DDPAdBhLqUZYQLJbn3wDoAIMEFYyQ
+SUPABASE_DATABASE_URL=postgresql://postgres:Fh@xj_wgU-D2Vde@db.fvwdcsqucajnqupsprmo.supabase.co:5432/postgres
+
+# Binance API (Trading)
 BINANCE_API_KEY=aUApdM0jyXeyI1HPxHymi9hSD6QZ3TXFORTknlyc1jADrkCJ7SNSayoZ6oiPCYEj
 BINANCE_SECRET_KEY=YGt2MXqsIhgjk6EsCwRCUjB3LpZ0L8xGAt9w4JYK6wyX2LveLHBFvRjoyBfIVcZM
 
-# Telegram Bot
+# Telegram Bot (Notificações)
 TELEGRAM_BOT_TOKEN=7690455274:AAHB64l8csWoE5UpV1Pnn9c8chJzd5sZTXQ
 TELEGRAM_CHAT_ID=1249100206
 
+# SendPulse (E-mail Marketing)
+SENDPULSE_CLIENT_ID=7b28b045d31c3d6d51591d7f56a26c99
+SENDPULSE_CLIENT_SECRET=26393054ce0cd24fc16a73382a3d5eef
+SENDPULSE_SENDER_EMAIL=crypten@portaldigital10.com
+SENDPULSE_API_URL=https://api.sendpulse.com
+
+# Mercado Pago (Pagamentos - TESTE)
+MERCADO_PAGO_ACCESS_TOKEN=TEST-6555567678065222-081500-d19fea4c0e7513745e4aba7f14244ba4-150384131
+MERCADO_PAGO_PUBLIC_KEY=TEST-49cb27ee-fe8c-4aa0-b055-092bf4616484
+
 # JWT e Segurança
-JWT_SECRET_KEY=X9&eR3@cM7!zL10prasempre 1*kP5^f
+JWT_SECRET=X9eR3cM7zL10prasempre1kP5f
 SECRET_KEY=gZ4vNpWq8sB2kF6a10prasempre
 
-# PostgreSQL
-POSTGRES_PASSWORD=sD6*qY1@jV3^cK8#m10prasempre F5&g
-
-# SendPulse Email
-SENDPULSE_API_USER_ID=7b28b045d31c3d6d51591d7f56a26c99
-SENDPULSE_API_SECRET=26393054ce0cd24fc16a73382a3d5eef
-SENDPULSE_SENDER_EMAIL=crypten@portaldigital10.com
-
-# Docker
-DOCKER_PASSWORD=sD311101jV3^c05#m10prasempre F5&g
+# URLs de Produção
+FRONTEND_URL=https://1crypten.space
+BACKEND_URL=https://api.1crypten.space
+API_BASE_URL=https://api.1crypten.space
+CORS_ORIGINS=https://1crypten.space,https://www.1crypten.space
 
 # Flask
 FLASK_ENV=production
