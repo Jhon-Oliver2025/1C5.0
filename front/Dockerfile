@@ -37,7 +37,8 @@ RUN apk add --no-cache curl
 # Copiar arquivos buildados
 COPY --from=0 /app/dist /usr/share/nginx/html
 
-# Copiar configuração customizada do Nginx
+# Remover configuração padrão e copiar nossa configuração
+RUN rm -f /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Criar manifest.json se não existir
