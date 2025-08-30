@@ -7,7 +7,6 @@ import os
 cleanup_status_bp = Blueprint('cleanup_status', __name__)
 
 @cleanup_status_bp.route('/cleanup-status', methods=['GET'])
-@jwt_required
 def get_cleanup_status():
     """Retorna o status das limpezas automáticas (ATIVO/INATIVO)"""
     try:
