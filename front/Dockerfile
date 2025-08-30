@@ -37,6 +37,9 @@ RUN apk add --no-cache curl
 # Copiar arquivos buildados
 COPY --from=0 /app/dist /usr/share/nginx/html
 
+# Copiar manifest.json explicitamente da pasta public
+COPY --from=0 /app/public/manifest.json /usr/share/nginx/html/manifest.json
+
 # Copiar configuração customizada do Nginx
 COPY nginx.conf /etc/nginx/nginx.conf
 
