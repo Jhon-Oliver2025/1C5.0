@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: crypto-redis-local
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data_local:/data
+    networks:
+      - crypto-network-local
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  backend:
+    build: 
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: crypto-backend-local
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=True
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=dev_secret_key_local_testing
+      - JWT_SECRET=dev_jwt_secret_local_testing
+      - BINANCE_API_KEY=${BINANCE_API_KEY:-demo_key}
+      - BINANCE_SECRET_KEY=${BINANCE_SECRET_KEY:-demo_secret}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-demo_token}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-demo_chat}
+      - SENDPULSE_CLIENT_ID=${SENDPULSE_CLIENT_ID:-demo_client}
+      - SENDPULSE_CLIENT_SECRET=${SENDPULSE_CLIENT_SECRET:-demo_secret}
+      - SENDPULSE_SENDER_EMAIL=${SENDPULSE_SENDER_EMAIL:-demo@test.com}
+      - SENDPULSE_API_URL=${SENDPULSE_API_URL:-https://api.sendpulse.com}
+      - SUPABASE_URL=${SUPABASE_URL:-https://fvwdcsqucajnqupsprmo.supabase.co}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2d2Rjc3F1Y2FqbnF1cHNwcm1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMTAzNzUsImV4cCI6MjA2ODc4NjM3NX0.h7cNPa_WtSn7s1DDPAdBhLqUZYQLJbn3wDoAIMEFYyQ}
+      - SUPABASE_DATABASE_URL=${SUPABASE_DATABASE_URL:-postgresql://postgres:Fh@xj_wgU-D2Vde@db.fvwdcsqucajnqupsprmo.supabase.co:5432/postgres}
+      - MERCADO_PAGO_ACCESS_TOKEN=${MERCADO_PAGO_ACCESS_TOKEN:-TEST-demo-token}
+      - MERCADO_PAGO_PUBLIC_KEY=${MERCADO_PAGO_PUBLIC_KEY:-TEST-demo-key}
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:8080
+      - API_BASE_URL=http://localhost:5000
+      - FRONTEND_URL=http://localhost:3000
+      - BACKEND_URL=http://localhost:5000
+    volumes:
+      - ./back:/app
+      - ./back/data:/app/data
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - crypto-network-local
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    container_name: crypto-frontend-local
+    ports:
+      - "8080:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000/api
+      - REACT_APP_DOMAIN=http://localhost:8080
+      - NODE_ENV=production
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - crypto-network-local
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  redis_data_local:
+
+networks:
+  crypto-network-local:
+    driver: bridge
