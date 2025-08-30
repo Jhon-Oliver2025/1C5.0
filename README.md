@@ -225,6 +225,33 @@ docker ps
 docker logs crypto-backend-local
 ```
 
+### Problema: Erro 403 Forbidden em APIs
+**Causa**: API protegida com `@jwt_required` desnecessariamente
+**Solução**: Verificar se a API deve ser pública
+```python
+# APIs de status/monitoramento DEVEM ser públicas:
+@app.route('/api/status')
+def status():  # SEM @jwt_required
+
+# APIs de dados sensíveis DEVEM ter autenticação:
+@app.route('/api/users')
+@jwt_required
+def users():  # COM @jwt_required
+```
+
+**APIs Públicas (sem autenticação)**:
+- `/api/status` - Status do sistema
+- `/api/cleanup-status` - Status de limpeza
+- `/api/market-status` - Status dos mercados
+- `/api/btc-signals/metrics` - Métricas públicas
+- `/api/health` - Health check
+
+**APIs Protegidas (com autenticação)**:
+- `/api/auth/login` - Login de usuário
+- `/api/users/*` - Dados de usuários
+- `/api/payments/*` - Informações de pagamento
+- `/api/admin/*` - Funcionalidades administrativas
+
 ## 📈 Próximas Melhorias
 
 - [ ] Implementar WebSocket para dados em tempo real

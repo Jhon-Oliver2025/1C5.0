@@ -231,6 +231,78 @@ done
 
 ---
 
+### ✅ Correção de API: Erro 403 Forbidden cleanup-status
+**Data**: 30/08/2025  
+**Commit**: `73ba00e`  
+**Status**: ✅ RESOLVIDO
+
+#### Problema
+- API `/api/cleanup-status` retornando `403 Forbidden`
+- Frontend exibindo erro no console: "API cleanup-status não disponível (403)"
+- Dashboard não conseguindo carregar status de limpeza
+
+#### Causa Raiz
+```python
+# CONFIGURAÇÃO PROBLEMÁTICA:
+@cleanup_status_bp.route('/cleanup-status', methods=['GET'])
+@jwt_required  # ← Exigia autenticação JWT
+def get_cleanup_status():
+```
+
+#### Solução Implementada
+```python
+# CONFIGURAÇÃO CORRIGIDA:
+@cleanup_status_bp.route('/cleanup-status', methods=['GET'])
+def get_cleanup_status():  # ← Removido @jwt_required
+    """Retorna o status das limpezas automáticas (ATIVO/INATIVO)"""
+```
+
+#### Justificativa
+- **Informação Pública**: Status de limpeza não é sensível
+- **Dashboard**: Necessário para monitoramento
+- **Consistência**: Outras APIs de status são públicas
+- **Fallback**: Já existe rota de fallback sem autenticação
+
+#### Testes de Validação
+```bash
+# ANTES (Falhando):
+curl http://localhost:8080/api/cleanup-status
+→ 403 Forbidden
+
+# DEPOIS (Funcionando):
+curl http://localhost:8080/api/cleanup-status
+→ 200 OK
+→ {
+    "current_time": "2025-08-30 06:35:09",
+    "morning_cleanup": {...},
+    "evening_cleanup": {...}
+  }
+```
+
+#### ⚠️ **ALERTA PARA FUTURAS APIs**
+**Problema Recorrente**: Este é o **segundo caso** de API com erro 403 por autenticação desnecessária.
+
+**APIs que DEVEM ser públicas (sem @jwt_required):**
+- `/api/status` - Status do sistema
+- `/api/cleanup-status` - Status de limpeza ✅ CORRIGIDO
+- `/api/market-status` - Status dos mercados
+- `/api/btc-signals/metrics` - Métricas públicas
+- `/api/health` - Health check
+
+**APIs que DEVEM ter autenticação (@jwt_required):**
+- `/api/auth/login` - Login de usuário
+- `/api/users/*` - Dados de usuários
+- `/api/payments/*` - Informações de pagamento
+- `/api/admin/*` - Funcionalidades administrativas
+
+**Checklist para Novas APIs:**
+- [ ] A API expõe dados sensíveis? → Usar `@jwt_required`
+- [ ] A API é para monitoramento/status? → NÃO usar `@jwt_required`
+- [ ] A API é usada no dashboard público? → NÃO usar `@jwt_required`
+- [ ] A API modifica dados? → Usar `@jwt_required`
+
+---
+
 **Documentação atualizada em**: 30/08/2025  
 **Próxima revisão**: 06/09/2025  
 **Responsável**: Equipe Técnica 1Crypten
