@@ -253,19 +253,19 @@
 }
 
 .mobile-market-label {
-  font-size: 10px;
+  font-size: 18px;
   color: #A0AEC0;
   text-transform: uppercase;
 }
 
 .mobile-market-time {
-  font-size: 12px;
+  font-size: 24px;
   font-weight: bold;
   color: #ffffff;
 }
 
 .mobile-market-status {
-  font-size: 10px;
+  font-size: 18px;
   font-weight: bold;
   padding: 2px 6px;
   border-radius: 4px;

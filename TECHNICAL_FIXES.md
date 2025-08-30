@@ -303,6 +303,54 @@ curl http://localhost:8080/api/cleanup-status
 
 ---
 
+### ✅ Melhorias de Design: Aumento de Fontes Mobile
+**Data**: 30/08/2025  
+**Commits**: Múltiplos commits de design  
+**Status**: ✅ CONCLUÍDO
+
+#### Problema
+- Fontes muito pequenas no dashboard mobile
+- Dificuldade de leitura em dispositivos móveis
+- Cards de sinais com texto pouco visível
+- Cabeçalho mobile com informações difíceis de ler
+
+#### Solução Implementada
+**📱 Cards de Sinais (SignalCard.module.css):**
+```css
+/* Aumentos aplicados */
+.symbol: 16px → 30px (+87.5%)
+.priceValue: 16px → 30px (+87.5%)
+```
+
+**📊 Cabeçalho Mobile (DashboardPage.module.css):**
+```css
+/* Aumentos aplicados */
+.mobile-market-label: 10px → 18px (+80%)
+.mobile-market-time: 12px → 24px (+100%)
+.mobile-market-status: 10px → 18px (+80%)
+```
+
+**📈 Estatísticas Mobile (DashboardMobile.css):**
+```css
+/* Aumentos aplicados */
+.mobile-stat-label: 12px → 24px (+100%)
+.mobile-stat-value: 18px → 30px (+67%)
+.mobile-motivational-text: 20px → 24px (+20%)
+```
+
+#### Resultado
+- **✅ Legibilidade Excelente**: Todos os textos muito mais fáceis de ler
+- **✅ Experiência Mobile**: Interface otimizada para dispositivos móveis
+- **✅ Hierarquia Visual**: Diferenciação clara entre elementos
+- **✅ Acessibilidade**: Tamanhos adequados para todos os usuários
+
+#### Arquivos Modificados
+- `front/src/components/SignalCard/SignalCard.module.css`
+- `front/src/pages/Dashboard/DashboardPage.module.css`
+- `front/src/pages/Dashboard/DashboardMobile.css`
+
+---
+
 **Documentação atualizada em**: 30/08/2025  
 **Próxima revisão**: 06/09/2025  
 **Responsável**: Equipe Técnica 1Crypten

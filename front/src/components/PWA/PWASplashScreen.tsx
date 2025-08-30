@@ -52,24 +52,7 @@ const PWASplashScreen: React.FC<PWASplashScreenProps> = ({
           className="pwa-splash-logo"
         />
         
-        <h1 className="pwa-splash-title">1Crypten</h1>
-        <p className="pwa-splash-subtitle">
-          Sinais de Trading Profissionais
-        </p>
-        
-        {isLoading && (
-          <div className="pwa-splash-loader-container">
-            <div className="pwa-splash-loader"></div>
-            <p className="pwa-splash-loading-text">Carregando...</p>
-          </div>
-        )}
-        
-        {!isLoading && (
-          <div className="pwa-splash-ready">
-            <div className="pwa-splash-check">✓</div>
-            <p className="pwa-splash-ready-text">Pronto!</p>
-          </div>
-        )}
+        {/* Removido: título, subtítulo e textos de loading/ready */}
       </div>
       
       {/* Indicador de progresso */}
