@@ -66,8 +66,6 @@ services:
   frontend:
     build: ./front
     container_name: crypto-frontend
-    ports:
-      - "80:80"
     environment:
       - REACT_APP_API_URL=https://1crypten.space/api
       - REACT_APP_DOMAIN=https://1crypten.space
