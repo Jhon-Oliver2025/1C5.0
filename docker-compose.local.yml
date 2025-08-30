@@ -30,8 +30,8 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=dev_secret_key_local_testing
       - JWT_SECRET=dev_jwt_secret_local_testing
-      - BINANCE_API_KEY=${BINANCE_API_KEY:-demo_key}
-      - BINANCE_SECRET_KEY=${BINANCE_SECRET_KEY:-demo_secret}
+      - BINANCE_API_KEY=${BINANCE_API_KEY:-aUApdM0jyXeyI1HPxHymi9hSD6QZ3TXFORTknlyc1jADrkCJ7SNSayoZ6oiPCYEj}
+      - BINANCE_SECRET_KEY=${BINANCE_SECRET_KEY:-demo_secret_disable_api_calls}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-demo_token}
       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-demo_chat}
       - SENDPULSE_CLIENT_ID=${SENDPULSE_CLIENT_ID:-demo_client}
