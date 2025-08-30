@@ -37,11 +37,11 @@ RUN apk add --no-cache curl
 # Copiar arquivos buildados
 COPY --from=0 /app/dist /usr/share/nginx/html
 
-# Copiar manifest.json diretamente da pasta local
-COPY public/manifest.json /usr/share/nginx/html/manifest.json
-
 # Copiar configuração customizada do Nginx
 COPY nginx.conf /etc/nginx/nginx.conf
+
+# Criar manifest.json se não existir
+RUN test -f /usr/share/nginx/html/manifest.json || echo '{"name":"1Crypten - Trading Signals","short_name":"1Crypten","description":"Plataforma avançada de sinais de trading para criptomoedas","start_url":"/","display":"standalone","background_color":"#000000","theme_color":"#646cff","orientation":"portrait-primary","scope":"/","lang":"pt-BR","icons":[{"src":"/icons/icon-192x192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},{"src":"/icons/icon-512x512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}' > /usr/share/nginx/html/manifest.json
 
 # Criar fallback se necessário
 RUN test -f /usr/share/nginx/html/index.html || echo '<h1>Build Error</h1>' > /usr/share/nginx/html/index.html
