@@ -30,8 +30,6 @@ services:
   backend:
     build: ./back
     container_name: crypto-backend
-    ports:
-      - "5000:5000"
     environment:
       - FLASK_ENV=production
       - REDIS_URL=redis://redis:6379/0
@@ -50,10 +48,10 @@ services:
       - SUPABASE_DATABASE_URL=${SUPABASE_DATABASE_URL:-postgresql://postgres:Fh@xj_wgU-D2Vde@db.fvwdcsqucajnqupsprmo.supabase.co:5432/postgres}
       - MERCADO_PAGO_ACCESS_TOKEN=${MERCADO_PAGO_ACCESS_TOKEN:-TEST-6555567678065222-081500-d19fea4c0e7513745e4aba7f14244ba4-150384131}
       - MERCADO_PAGO_PUBLIC_KEY=${MERCADO_PAGO_PUBLIC_KEY:-TEST-49cb27ee-fe8c-4aa0-b055-092bf4616484}
-      - CORS_ORIGINS=https://1crypten.space,https://www.1crypten.space,https://api.1crypten.space
-      - API_BASE_URL=https://api.1crypten.space
+      - CORS_ORIGINS=https://1crypten.space,https://www.1crypten.space
+      - API_BASE_URL=https://1crypten.space
       - FRONTEND_URL=https://1crypten.space
-      - BACKEND_URL=https://api.1crypten.space
+      - BACKEND_URL=https://1crypten.space
       - GUNICORN_WORKERS=4
       - GUNICORN_THREADS=2
       - GUNICORN_TIMEOUT=120
@@ -82,18 +80,19 @@ services:
       start_period: 60s
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`api.1crypten.space`)"
+      - "traefik.http.routers.api.rule=Host(`1crypten.space`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.priority=100"
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.tls.certresolver=letsencrypt"
       - "traefik.http.services.api.loadbalancer.server.port=5000"
+      - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
+      - "traefik.http.routers.api.middlewares=api-stripprefix"
 
   frontend:
     build: ./front
     container_name: crypto-frontend
-    ports:
-      - "3000:80"
     environment:
-      - REACT_APP_API_URL=https://api.1crypten.space
+      - REACT_APP_API_URL=https://1crypten.space/api
       - REACT_APP_DOMAIN=https://1crypten.space
     depends_on:
       - backend
@@ -117,6 +116,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`1crypten.space`)"
+      - "traefik.http.routers.frontend.priority=1"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
       - "traefik.http.services.frontend.loadbalancer.server.port=80"
