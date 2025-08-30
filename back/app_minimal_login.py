@@ -53,6 +53,14 @@ try:
 except Exception as e:
     print(f"❌ Erro ao registrar rotas de payments: {e}")
 
+# Importar rotas de sinais
+try:
+    from api_routes.signals import signals_bp
+    app.register_blueprint(signals_bp, url_prefix='/api')
+    print("✅ Rotas de sinais registradas")
+except Exception as e:
+    print(f"❌ Erro ao registrar rotas de signals: {e}")
+
 # Rota de status básica
 @app.route('/api/status', methods=['GET'])
 def status():
@@ -82,6 +90,36 @@ def payment_config():
             'public_key': os.getenv('MERCADO_PAGO_PUBLIC_KEY', 'TEST-mock-public-key-for-development')
         }
     })
+
+# Rota de sinais mock para desenvolvimento
+@app.route('/api/signals', methods=['GET'])
+@app.route('/api/signals/', methods=['GET'])
+def signals_mock():
+    """Sinais mock para desenvolvimento"""
+    return jsonify([
+        {
+            "symbol": "BTCUSDT",
+            "type": "LONG",
+            "entry_price": 50000.0,
+            "entry_time": "2025-08-29T23:00:00",
+            "target_price": 52000.0,
+            "projection_percentage": 4.0,
+            "status": "CONFIRMADO",
+            "quality_score": 8.5,
+            "signal_class": "PREMIUM"
+        },
+        {
+            "symbol": "ETHUSDT",
+            "type": "SHORT",
+            "entry_price": 3000.0,
+            "entry_time": "2025-08-29T22:30:00",
+            "target_price": 2850.0,
+            "projection_percentage": -5.0,
+            "status": "CONFIRMADO",
+            "quality_score": 7.8,
+            "signal_class": "ELITE"
+        }
+    ])
 
 if __name__ == '__main__':
     # Configurações do servidor
