@@ -158,6 +158,16 @@ export const useAuthToken = () => {
     return response;
   }, [verifyToken, logout]);
 
+  // Sincronizar token com localStorage na inicialização
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken && storedToken !== token) {
+      setToken(storedToken);
+      setIsAuthenticated(true);
+      console.log('🔄 Token sincronizado do localStorage');
+    }
+  }, []);
+
   // Verificar token na inicialização apenas se não estiver autenticado
   useEffect(() => {
     if (token && !isAuthenticated) {

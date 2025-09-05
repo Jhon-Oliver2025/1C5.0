@@ -59,7 +59,7 @@ const DashboardPage: React.FC = () => {
   });
   
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuthToken();
+  const { isAuthenticated, logout, token } = useAuthToken();
   const { isAdmin } = useAdminCheck();
   
   /**
@@ -92,12 +92,8 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-  // Redirecionar para login se não estiver autenticado
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-    }
-  }, [isAuthenticated, navigate]);
+  // Remover redirecionamento automático para evitar loop com LoginPage
+  // O LoginPage já gerencia o redirecionamento quando necessário
 
   // Função para buscar status dos mercados da API
   const fetchMarketStatus = async () => {
@@ -147,9 +143,8 @@ const DashboardPage: React.FC = () => {
   // Função para buscar status das limpezas da API
   const fetchCleanupStatus = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        console.warn('Token não encontrado para buscar status das limpezas');
+      if (!token || !isAuthenticated) {
+        console.log('⏳ Aguardando autenticação para buscar status das limpezas');
         return;
       }
       
@@ -186,9 +181,8 @@ const DashboardPage: React.FC = () => {
   // Função para buscar dados do BTC
   const fetchBTCData = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        console.warn('Token não encontrado para buscar dados do BTC');
+      if (!token || !isAuthenticated) {
+        console.log('⏳ Aguardando autenticação para buscar dados do BTC');
         return;
       }
       
@@ -298,30 +292,35 @@ const DashboardPage: React.FC = () => {
    * Carrega os sinais da API na inicialização
    */
   useEffect(() => {
+    if (!isAuthenticated || !token) {
+      console.log('⏳ Aguardando autenticação completa...');
+      return;
+    }
+    
     fetchSignals();
     fetchMarketStatus();
     fetchCleanupStatus();
     fetchBTCData();
     
-    // Verificar novos sinais a cada 2 minutos (sem refresh da página)
+    // Verificar novos sinais a cada 5 minutos (sem refresh da página)
     const signalsTimer = setInterval(() => {
       fetchSignalsUpdate();
-    }, 120000);
+    }, 300000);
     
-    // Atualizar status dos mercados a cada 30 segundos
+    // Atualizar status dos mercados a cada 2 minutos
     const marketTimer = setInterval(() => {
       fetchMarketStatus();
-    }, 30000);
+    }, 120000);
     
-    // Atualizar status das limpezas a cada 60 segundos
+    // Atualizar status das limpezas a cada 5 minutos
     const cleanupTimer = setInterval(() => {
       fetchCleanupStatus();
-    }, 60000);
+    }, 300000);
     
-    // Atualizar dados do BTC a cada 30 segundos
+    // Atualizar dados do BTC a cada 2 minutos
     const btcTimer = setInterval(() => {
       fetchBTCData();
-    }, 30000);
+    }, 120000);
     
     return () => {
       clearInterval(signalsTimer);
@@ -329,7 +328,7 @@ const DashboardPage: React.FC = () => {
       clearInterval(cleanupTimer);
       clearInterval(btcTimer);
     };
-  }, []);
+  }, [isAuthenticated, token]);
 
   /**
    * Formata a data para exibição com timezone correto do Brasil

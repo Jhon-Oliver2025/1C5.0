@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { useAuthToken } from './useAuthToken';
 
 /**
  * Hook para gerenciar autenticação com retry automático
@@ -9,6 +10,7 @@ export const useAuthManager = () => {
   const [error, setError] = useState<string | null>(null);
   const retryAttempts = useRef<number>(0);
   const maxRetries = 3;
+  const { login: authLogin } = useAuthToken();
   const retryDelay = 1000; // 1 segundo
 
   /**
@@ -68,19 +70,19 @@ export const useAuthManager = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ username: email, password }),
         });
 
         if (response.ok) {
           const data = await response.json();
           
           if (data.token) {
-            // Salvar token
-            localStorage.setItem('token', data.token);
-            
-            // Salvar dados do usuário se disponível
+            // Usar a função login do useAuthToken para atualizar o estado
             if (data.user) {
-              localStorage.setItem('user', JSON.stringify(data.user));
+              authLogin(data.token, data.user);
+            } else {
+              // Se não tiver dados do usuário, salvar apenas o token
+              localStorage.setItem('token', data.token);
             }
 
             console.log('✅ Auth: Login realizado com sucesso');
@@ -185,7 +187,7 @@ export const useAuthManager = () => {
     if (!token) return false;
 
     try {
-      const response = await fetch('/api/auth/validate', {
+      const response = await fetch('/api/auth/verify-token', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

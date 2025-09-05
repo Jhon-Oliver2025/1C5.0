@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import usePWAManager from '../../hooks/usePWAManager';
 import useAuthManager from '../../hooks/useAuthManager';
+import { useAuthToken } from '../../hooks/useAuthToken';
 
 /**
  * Interface para o contexto PWA
@@ -63,6 +64,7 @@ export const PWAProvider: React.FC<PWAProviderProps> = ({ children }) => {
   // Hooks personalizados
   const pwaManager = usePWAManager();
   const authManager = useAuthManager();
+  const { isAuthenticated, user: authUser, token } = useAuthToken();
 
   /**
    * Inicializa a aplicação
@@ -72,19 +74,13 @@ export const PWAProvider: React.FC<PWAProviderProps> = ({ children }) => {
       console.log('🚀 PWA: Inicializando aplicação...');
       
       try {
-        // Verificar se está autenticado
-        if (authManager.isAuthenticated()) {
-          // Validar token
-          const tokenValid = await authManager.validateToken();
-          
-          if (tokenValid) {
-            // Carregar dados do usuário
-            const userData = authManager.getUser();
-            setUser(userData);
-            console.log('✅ PWA: Usuário autenticado carregado');
-          } else {
-            console.log('🔐 PWA: Token inválido, usuário deslogado');
-          }
+        // Usar estado do useAuthToken diretamente
+        if (isAuthenticated && authUser) {
+          setUser(authUser);
+          console.log('✅ PWA: Usuário autenticado carregado');
+        } else {
+          console.log('🔐 PWA: Usuário não autenticado');
+          setUser(null);
         }
         
         setIsAppReady(true);
@@ -96,7 +92,7 @@ export const PWAProvider: React.FC<PWAProviderProps> = ({ children }) => {
     };
 
     initializeApp();
-  }, [authManager]);
+  }, [isAuthenticated, authUser]);
 
   /**
    * Gerencia eventos personalizados PWA
@@ -189,7 +185,7 @@ export const PWAProvider: React.FC<PWAProviderProps> = ({ children }) => {
     needsUpdate,
     
     // Autenticação
-    isAuthenticated: authManager.isAuthenticated(),
+    isAuthenticated: isAuthenticated,
     user,
     authLoading: authManager.isLoading,
     authError: authManager.error,
