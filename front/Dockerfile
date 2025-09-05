@@ -17,6 +17,7 @@ RUN npm install --save-dev vite @vitejs/plugin-react typescript
 COPY tsconfig*.json ./
 COPY vite.config.ts ./
 COPY index.html ./
+COPY eslint.config.js ./
 
 # Copiar código fonte
 COPY src/ ./src/
