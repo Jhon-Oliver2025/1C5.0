@@ -1,0 +1,283 @@
+.loginPageContainer {
+  min-height: 100vh;
+  width: 100vw; /* Adicionar largura total da viewport */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url('/terra2.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  margin: 0; /* Remover margens */
+  padding: 0; /* Remover padding */
+  position: fixed; /* Fixar posição */
+  top: 0;
+  left: 0;
+}
+
+.loginCard {
+  background-color: rgba(10, 25, 47, 0.4);
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  max-width: 400px;
+  width: 90%; /* Ajustar para responsividade */
+  color: #E2E8F0;
+  margin: 20px; /* Adicionar margem para espaçamento */
+}
+
+.logoSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.crypTenLogo {
+  height: 100px; /* Aumentado o tamanho do logo dentro do card */
+}
+
+.crypTenText {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #64FFDA; /* Cor do texto "CrypTen Logo" */
+}
+
+.loginCard h2 {
+  font-size: 2em;
+  margin-bottom: 10px;
+  color: #64FFDA; /* Cor do título "Aceda à sua conta" */
+}
+
+.loginCard p {
+  font-size: 1em;
+  margin-bottom: 30px;
+  color: #A0AEC0; /* Cor do subtítulo */
+}
+
+.formGroup {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #E2E8F0;
+}
+
+.formGroup input {
+  width: calc(100% - 20px); /* Largura total menos o padding */
+  padding: 10px;
+  border: 1px solid #4A5568; /* Borda mais escura */
+  border-radius: 5px;
+  background-color: #2D3748; /* Fundo do input mais escuro */
+  color: #E2E8F0;
+  font-size: 1em;
+  outline: none; /* Remove o outline padrão ao focar */
+  transition: border-color 0.3s ease;
+}
+
+.formGroup input:focus {
+  border-color: #64FFDA; /* Borda neon ao focar */
+}
+
+.loginButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #00BCD4;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.loginButton:hover:not(:disabled) {
+  background-color: #00ACC1;
+  box-shadow: 0 0 10px rgba(0, 188, 212, 0.8);
+  transform: translateY(-1px);
+}
+
+.loginButton:disabled {
+  background-color: #4A5568;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.loginButton:disabled::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid transparent;
+  border-top: 2px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.errorMessage {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  padding: 12px;
+  border-radius: 5px;
+  margin: 15px 0;
+  font-size: 0.9em;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.registerLink {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 0.9em;
+}
+
+.registerLink a {
+  color: #64FFDA; /* Cor de destaque, similar aos seus links de navegação */
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.registerLink a:hover {
+  text-decoration: underline;
+}
+
+/* Novos estilos para o link de recuperação de senha */
+.forgotPasswordLink {
+  margin-top: 10px; /* Espaçamento menor que o registerLink */
+  text-align: center;
+  font-size: 0.9em;
+}
+
+.forgotPasswordLink a {
+  color: #64FFDA; /* Mesma cor de destaque */
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.forgotPasswordLink a:hover {
+  text-decoration: underline;
+}
+
+/* Novos estilos para os links de política (Termos de Serviço e Política de Privacidade) */
+.policyLinks {
+  margin-top: 30px; /* Espaçamento maior para separar do card de login */
+  text-align: center;
+  font-size: 0.85em; /* Fonte um pouco menor */
+  color: #A0AEC0; /* Cor do texto padrão */
+}
+
+.policyLinks a {
+  color: #64FFDA; /* Mesma cor de destaque para os links */
+  text-decoration: none;
+  font-weight: bold;
+  margin: 0 5px; /* Espaçamento entre os links */
+}
+
+.policyLinks a:hover {
+  text-decoration: underline;
+}
+
+/* Media Queries para dispositivos móveis */
+@media (max-width: 768px) {
+  .loginCard {
+    padding: 30px 20px;
+    margin: 10px;
+    max-width: 90%;
+  }
+
+  .crypTenLogo {
+    height: 80px; /* Logo menor no mobile */
+  }
+
+  .loginCard h2 {
+    font-size: 1.8em; /* Título maior no mobile */
+    margin-bottom: 15px;
+  }
+
+  .loginCard p {
+    font-size: 1.1em; /* Subtítulo maior no mobile */
+    margin-bottom: 25px;
+  }
+
+  .formGroup label {
+    font-size: 1.1em; /* Labels maiores no mobile */
+    margin-bottom: 10px;
+  }
+
+  .formGroup input {
+    font-size: 1.2em; /* Inputs maiores no mobile */
+    padding: 15px;
+    width: calc(100% - 30px);
+  }
+
+  .loginButton {
+    font-size: 1.3em; /* Botão maior no mobile */
+    padding: 15px;
+  }
+
+  .registerLink {
+    font-size: 1em; /* Link de registro maior no mobile */
+    margin-top: 20px;
+  }
+
+  .forgotPasswordLink {
+    font-size: 1em; /* Link de senha maior no mobile */
+    margin-top: 15px;
+  }
+
+  .policyLinks {
+    font-size: 0.95em; /* Links de política maiores no mobile */
+    margin-top: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .loginCard {
+    padding: 25px 15px;
+    margin: 5px;
+    max-width: 95%;
+  }
+
+  .loginCard h2 {
+    font-size: 1.6em;
+  }
+
+  .loginCard p {
+    font-size: 1em;
+  }
+
+  .formGroup input {
+    font-size: 1.1em;
+    padding: 12px;
+  }
+
+  .loginButton {
+    font-size: 1.2em;
+    padding: 12px;
+  }
+}

@@ -1,0 +1,209 @@
+version: '3.8'
+
+services:
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    # ports:
+      # - "6379:6379"  # Removido para evitar conflito de porta em produção
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - app-network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 60s
+      timeout: 30s
+      retries: 5
+      start_period: 60s
+
+  # Backend Flask API com Supabase
+  backend:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    # ports:
+      # - "5000:5000"  # Removido - acesso apenas via Nginx
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=0
+      - PYTHONUNBUFFERED=1
+      # Configurações do Supabase
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - SUPABASE_DATABASE_URL=${SUPABASE_DATABASE_URL}
+      # Redis (mantido)
+      - REDIS_URL=redis://redis:6379/0
+      # Configurações da aplicação
+      - SECRET_KEY=gZ4vNpWq8sB2kF6a10prasempre
+      - JWT_SECRET=X9&eR3@cM7!zL10prasempre 1*kP5^f
+      - FLASK_PORT=5000
+      # APIs externas
+      - USE_BINANCE_API=true
+      - BINANCE_API_KEY=aUApdM0jyXeyI1HPxHymi9hSD6QZ3TXFORTknlyc1jADrkCJ7SNSayoZ6oiPCYEj
+      - BINANCE_SECRET_KEY=YGt2MXqsIhgjk6EsCwRCUjB3LpZ0L8xGAt9w4JYK6wyX2LveLHBFvRjoyBfIVcZM
+      - TELEGRAM_BOT_TOKEN=7690455274:AAHB64l8csWoE5UpV1Pnn9c8chJzd5sZTXQ
+      - TELEGRAM_CHAT_ID=1249100206
+      - SENDPULSE_CLIENT_ID=7b28b045d31c3d6d51591d7f56a26c99
+      - SENDPULSE_CLIENT_SECRET=26393054ce0cd24fc16a73382a3d5eef
+      - SENDPULSE_SENDER_EMAIL=crypten@portaldigital10.com
+    volumes:
+      - ./back/data:/app/data
+    restart: unless-stopped
+    networks:
+      - app-network
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "healthcheck.py"]
+      interval: 90s
+      timeout: 60s
+      retries: 3
+      start_period: 300s
+
+  # Frontend React App
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_API_URL=https://1crypten.space
+    restart: unless-stopped
+    networks:
+      - app-network
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80/health || curl -f http://localhost:80/ || exit 1"]
+      interval: 60s
+      timeout: 30s
+      retries: 5
+      start_period: 120s
+
+  # Nginx Proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+      - frontend
+    command: |
+      sh -c '
+      cat > /etc/nginx/nginx.conf << EOF
+      events {
+          worker_connections 1024;
+      }
+      
+      http {
+          include       /etc/nginx/mime.types;
+          default_type  application/octet-stream;
+          
+          sendfile        on;
+          keepalive_timeout  65;
+          
+          # Upstreams
+          upstream backend {
+              server backend:5000 max_fails=3 fail_timeout=30s;
+              keepalive 32;
+          }
+          
+          upstream frontend {
+              server frontend:80;
+          }
+          
+          server {
+              listen 80;
+              server_name _;
+              
+              # Health check endpoint
+              location /api/health {
+                  proxy_pass http://backend/api/health;
+                  proxy_set_header Host $$host;
+                  proxy_set_header X-Real-IP $$remote_addr;
+                  proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $$scheme;
+                  
+                  # CORS headers
+                  add_header Access-Control-Allow-Origin "*" always;
+                  add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" always;
+                  add_header Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization" always;
+                  
+                  # Handle preflight requests
+                  if ($$request_method = OPTIONS) {
+                      return 204;
+                  }
+                  
+                  proxy_connect_timeout 60s;
+                  proxy_send_timeout 60s;
+                  proxy_read_timeout 60s;
+                  proxy_next_upstream error timeout http_502 http_503 http_504;
+              }
+              
+              # API routes
+              location /api/ {
+                  proxy_pass http://backend/api/;
+                  proxy_set_header Host $$host;
+                  proxy_set_header X-Real-IP $$remote_addr;
+                  proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $$scheme;
+                  
+                  # CORS headers
+                  add_header Access-Control-Allow-Origin "*" always;
+                  add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" always;
+                  add_header Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization" always;
+                  
+                  # Handle preflight requests
+                  if ($$request_method = OPTIONS) {
+                      return 204;
+                  }
+                  
+                  proxy_connect_timeout 30s;
+                  proxy_send_timeout 60s;
+                  proxy_read_timeout 60s;
+                  
+                  proxy_buffering off;
+                  proxy_request_buffering off;
+                  proxy_http_version 1.1;
+                  proxy_set_header Connection "";
+                  proxy_next_upstream error timeout http_502 http_503 http_504;
+              }
+              
+              # Frontend routes
+              location / {
+                  proxy_pass http://frontend/;
+                  proxy_set_header Host $$host;
+                  proxy_set_header X-Real-IP $$remote_addr;
+                  proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $$scheme;
+                  
+                  proxy_connect_timeout 30s;
+                  proxy_send_timeout 30s;
+                  proxy_read_timeout 30s;
+              }
+          }
+      }
+      EOF
+      nginx -g "daemon off;"
+      '
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  redis_data:
+    driver: local
